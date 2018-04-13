@@ -7,6 +7,10 @@ import frappe
 from frappe.model.document import Document
 
 class CompensatoryLeaveRequest(Document):
+<<<<<<< HEAD
 	def validate_present(self):
 		pass
 
+=======
+	pass
+>>>>>>> New doctypes for HR and Accounting (#13652)
