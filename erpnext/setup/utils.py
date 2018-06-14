@@ -52,6 +52,24 @@ def before_tests():
 	frappe.db.set_value("Stock Settings", None, "auto_insert_price_list_rate_if_missing", 0)
 	enable_all_roles_and_domains()
 
+	if not frappe.db.exists('Company', 'Woocommerce'):
+		company = frappe.new_doc("Company")
+		company.company_name = "Woocommerce"
+		company.abbr = "W"
+		company.default_currency = "INR"
+		company.save()
+
+	woo_settings = frappe.get_doc("Woocommerce Settings")
+	if not woo_settings.secret:
+		woo_settings.secret = "REDACTED"
+		woo_settings.woocommerce_server_url = "https://woocommerce.mntechnique.com/"
+		woo_settings.api_consumer_key = "REDACTED"
+		woo_settings.api_consumer_secret = "REDACTED"
+		woo_settings.enable_sync = 1
+		woo_settings.tax_account = "Sales Expenses - W"
+		woo_settings.f_n_f_account = "Expenses - W"
+		woo_settings.save(ignore_permissions=True)
+
 	frappe.db.commit()
 
 @frappe.whitelist()
