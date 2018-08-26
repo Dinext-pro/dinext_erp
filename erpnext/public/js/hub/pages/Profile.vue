@@ -18,7 +18,7 @@
 import DetailView from '../components/DetailView.vue';
 
 export default {
-	name: 'saved-products-page',
+	name: 'profile-page',
 	components: {
 		DetailView
 	},
