@@ -18,7 +18,7 @@ export default {
 	name: 'QuizSingleChoice',
 	methods: {
 		emitResponse(q, o) {
-			this.$emit('updateResponse', {'question':q , 'option': o})
+			this.$emit('updateResponse', {'question':q , 'option': o, 'type': this.question.type})
 		}
 	}
 };
