@@ -1,0 +1,77 @@
+{% extends "templates/base.html" %}
+{% block title %}{{ course.course_name }}{% endblock %}
+
+{% block head_include %}
+	<style>
+		div.card-hero-img {
+			height: 220px;
+			background-size: cover;
+			background-repeat: no-repeat;
+			background-position: center;
+			background-color: rgb(250, 251, 252);
+		}
+
+		.card-image-wrapper {
+			display: flex;
+			overflow: hidden;
+			height: 220px;
+			background-color: rgb(250, 251, 252);
+			justify-content: center;
+		}
+
+		.image-body {
+			align-self: center;
+			color: #d1d8dd;
+			font-size: 24px;
+			font-weight: 600;
+			line-height: 1;
+			padding: 20px;
+		}
+	</style>
+{% endblock %}
+
+
+{% macro card(topic, index, length) %}
+<div class="col-sm-{{ 12 if length%3 == 1 and index == 1 else 6 if length%3 == 2 and index in [1,2] else 4}} mb-4 text-left">
+	<div class="card h-100">
+		<a href="/lms/content?topic={{ topic.name }}&type=Content" class="no-decoration no-underline">
+			{% if topic.hero_image %}
+			<div class="card-hero-img" style="background-image: url({{ topic.hero_image }})"></div>
+			{% else %}
+			<div class="card-image-wrapper text-center">
+				<div class="image-body">{{ topic.topic_name }}</div>
+			</div>
+			{% endif %}
+			<div class='card-body'>
+				<h5 class='card-title'>{{ topic.topic_name }}</h5>
+				<div>
+					<ol class="list-unstyled">
+					{% for content in topic.topic_content %}
+						<li><a class="text-muted" href="/lms/content?topic={{ topic.name }}&type={{ content.content_type }}&content={{ content.content }}">{{ content.content }}</li></a>
+					{% endfor %}
+					</ol>
+				</div>
+			</div>
+		</a>
+	</div>
+</div>
+{% endmacro %}
+
+{% block content %}
+<section class="top-section ">
+	<div class='container pb-5'>
+		<h1>{{ course.course_name }}</h1>
+		<p class='lead'>{{ course.course_intro }}</p>
+		<p class="mt-4">
+			<a class="btn btn-primary btn-lg" style="width: 170px;" href="/login#signup">Sign Up</a>
+		</p>
+	</div>
+	<div class='container'>
+		<div class="row mt-5">
+			{% for topic in topics %}
+				{{ card(topic.as_dict(), loop.index, topics|length) }}
+			{% endfor %}
+		</div>
+	</div>
+</section>
+{% endblock %}
