@@ -18,6 +18,7 @@ class TestWoocommerce(unittest.TestCase):
 			woo_settings.api_consumer_key = "REDACTED"
 			woo_settings.api_consumer_secret = "REDACTED"
 			woo_settings.enable_sync = 1
+			woo_settings.company = "Woocommerce"
 			woo_settings.tax_account = "Sales Expenses - W"
 			woo_settings.f_n_f_account = "Expenses - W"
 			woo_settings.creation_user = "Administrator"
