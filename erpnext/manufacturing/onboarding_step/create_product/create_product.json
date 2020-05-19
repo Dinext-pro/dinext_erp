@@ -8,12 +8,12 @@
  "is_mandatory": 1,
  "is_single": 0,
  "is_skipped": 0,
- "modified": "2020-05-14 19:10:39.974370",
+ "modified": "2020-05-19 12:50:59.010439",
  "modified_by": "Administrator",
  "name": "Create Product",
  "owner": "Administrator",
  "reference_document": "Item",
  "show_full_form": 0,
- "title": "Create Product (Raw Materials / Finished Good)",
+ "title": "Create a Finished Good",
  "validate_action": 1
 }
