@@ -1,14 +1,15 @@
 {
  "action": "View Report",
+ "action_label": "Check Stock Ledger",
  "creation": "2021-05-17 16:16:10.727959",
- "description": "# View Stock Ledger\nThe [**Stock Ledger**](https://docs.erpnext.com/docs/user/manual/en/stock/stock-ledger) is a detailed record that keeps track of stock movements for a company. \n\nIn this step we will view the *Stock Ledger*.",
+ "description": "# Check Stock Reports\nBased on the various stock transactions, you can get a host of one-click Stock Reports in ERPNext like Stock Ledger, Stock Balance, Projected Quantity, and Ageing analysis.",
  "docstatus": 0,
  "doctype": "Onboarding Step",
  "idx": 0,
  "is_complete": 0,
  "is_single": 0,
  "is_skipped": 0,
- "modified": "2021-05-18 16:16:38.150079",
+ "modified": "2021-06-18 14:09:39.399311",
  "modified_by": "Administrator",
  "name": "View Stock Ledger",
  "owner": "Administrator",
@@ -18,6 +19,6 @@
  "report_type": "Script Report",
  "show_form_tour": 0,
  "show_full_form": 0,
- "title": "View Stock Ledger",
+ "title": "Check Stock Reports",
  "validate_action": 1
 }
