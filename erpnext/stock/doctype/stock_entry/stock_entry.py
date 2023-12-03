@@ -23,7 +23,11 @@ from frappe.utils import (
 
 import erpnext
 from erpnext.accounts.general_ledger import process_gl_map
+<<<<<<< HEAD
 from erpnext.buying.utils import check_on_hold_or_closed_status
+=======
+from erpnext.controllers.accounts_controller import InvalidQtyError
+>>>>>>> b2d8a44199 (test: Add, expand and refine test-cases for zero-quantity transactions.)
 from erpnext.controllers.taxes_and_totals import init_landed_taxes_and_totals
 from erpnext.manufacturing.doctype.bom.bom import (
 	add_additional_cost,
@@ -367,7 +371,8 @@ class StockEntry(StockController):
 	def set_transfer_qty(self):
 		for item in self.get("items"):
 			if not flt(item.qty):
-				frappe.throw(_("Row {0}: Qty is mandatory").format(item.idx), title=_("Zero quantity"))
+				message = _("Row {0}: Qty is mandatory").format(item.idx)
+				frappe.throw(message, InvalidQtyError, title=_("Zero quantity"))
 			if not flt(item.conversion_factor):
 				frappe.throw(_("Row {0}: UOM Conversion Factor is mandatory").format(item.idx))
 			item.transfer_qty = flt(
