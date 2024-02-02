@@ -3,7 +3,11 @@ import json
 import frappe
 from frappe import _, qb
 from frappe.model.document import Document
+<<<<<<< HEAD
 from frappe.query_builder.functions import Abs, Sum
+=======
+from frappe.query_builder.functions import Sum
+>>>>>>> f7face43cd (fix: check payments against orders for getting request amount)
 from frappe.utils import flt, nowdate
 from frappe.utils.background_jobs import enqueue
 
@@ -127,6 +131,8 @@ class PaymentRequest(Document):
 		ref_doc = frappe.get_doc(self.reference_doctype, self.reference_name)
 		if not hasattr(ref_doc, "order_type") or ref_doc.order_type != "Shopping Cart":
 			ref_amount = get_amount(ref_doc, self.payment_account)
+			if not ref_amount:
+				frappe.throw(_("Payment Entry is already created"))
 
 			if existing_payment_request_amount + flt(self.grand_total) > ref_amount:
 				frappe.throw(
@@ -544,6 +550,8 @@ def make_payment_request(**args):
 	gateway_account = get_gateway_details(args) or frappe._dict()
 
 	grand_total = get_amount(ref_doc, gateway_account.get("payment_account"))
+	if not grand_total:
+		frappe.throw(_("Payment Entry is already created"))
 	if args.loyalty_points and args.dt == "Sales Order":
 		from erpnext.accounts.doctype.loyalty_program.loyalty_program import validate_loyalty_points
 
@@ -678,6 +686,7 @@ def get_amount(ref_doc, payment_account=None):
 	dt = ref_doc.doctype
 	if dt in ["Sales Order", "Purchase Order"]:
 		grand_total = flt(ref_doc.rounded_total) or flt(ref_doc.grand_total)
+		grand_total -= get_paid_amount_against_order(dt, ref_doc.name)
 	elif dt in ["Sales Invoice", "Purchase Invoice"]:
 		if not ref_doc.get("is_pos"):
 			if ref_doc.party_account_currency == ref_doc.currency:
@@ -699,10 +708,14 @@ def get_amount(ref_doc, payment_account=None):
 	elif dt == "Fees":
 		grand_total = ref_doc.outstanding_amount
 
+<<<<<<< HEAD
 	if grand_total > 0:
 		return flt(grand_total, get_currency_precision())
 	else:
 		frappe.throw(_("Payment Entry is already created"))
+=======
+	return grand_total
+>>>>>>> f7face43cd (fix: check payments against orders for getting request amount)
 
 
 def get_irequest_status(payment_requests: None | list = None) -> list:
@@ -992,6 +1005,7 @@ def validate_payment(doc, method=None):
 	)
 
 
+<<<<<<< HEAD
 @frappe.whitelist()
 def get_open_payment_requests_query(doctype, txt, searchfield, start, page_len, filters):
 	# permission checks in `get_list()`
@@ -1032,3 +1046,27 @@ def get_irequests_of_payment_request(doc: str | None = None) -> list:
 			},
 		)
 	return res
+=======
+def get_paid_amount_against_order(dt, dn):
+	pe_ref = frappe.qb.DocType("Payment Entry Reference")
+	if dt == "Sales Order":
+		inv_dt, inv_field = "Sales Invoice Item", "sales_order"
+	else:
+		inv_dt, inv_field = "Purchase Invoice Item", "purchase_order"
+	inv_item = frappe.qb.DocType(inv_dt)
+	return (
+		frappe.qb.from_(pe_ref)
+		.select(
+			Sum(pe_ref.allocated_amount),
+		)
+		.where(
+			(pe_ref.docstatus == 1)
+			& (
+				(pe_ref.reference_name == dn)
+				| pe_ref.reference_name.isin(
+					frappe.qb.from_(inv_item).select(inv_item.parent).where(inv_item[inv_field] == dn).distinct()
+				)
+			)
+		)
+	).run()[0][0] or 0
+>>>>>>> f7face43cd (fix: check payments against orders for getting request amount)
