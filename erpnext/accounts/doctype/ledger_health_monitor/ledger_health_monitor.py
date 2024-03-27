@@ -14,6 +14,11 @@ class LedgerHealthMonitor(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from erpnext.accounts.doctype.ledger_health_monitor_company.ledger_health_monitor_company import (
+			LedgerHealthMonitorCompany,
+		)
+
+		companies: DF.Table[LedgerHealthMonitorCompany]
 		debit_credit_mismatch: DF.Check
 		enable_health_monitor: DF.Check
 		general_and_payment_ledger_mismatch: DF.Check
