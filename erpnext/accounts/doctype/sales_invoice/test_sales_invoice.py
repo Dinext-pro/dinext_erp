@@ -3924,6 +3924,7 @@ class TestSalesInvoice(FrappeTestCase):
 		self.assertEqual(len(res), 1)
 		self.assertEqual(res[0][0], pos_return.return_against)
 
+<<<<<<< HEAD
 	@change_settings("Accounts Settings", {"enable_common_party_accounting": True})
 	def test_common_party_with_foreign_currency_jv(self):
 		from erpnext.accounts.doctype.account.test_account import create_account
@@ -4032,6 +4033,57 @@ class TestSalesInvoice(FrappeTestCase):
 		)
 
 		self.assertTrue(all([x == "Credit Note" for x in gl_entries]))
+=======
+	def test_validation_on_opening_invoice_with_rounding(self):
+		si = create_sales_invoice(qty=1, rate=99.98, do_not_submit=True)
+		si.is_opening = "Yes"
+		si.items[0].income_account = "Temporary Opening - _TC"
+		si.save()
+		self.assertRaises(frappe.ValidationError, si.submit)
+
+	def test_opening_invoice_with_rounding_adjustment(self):
+		si = create_sales_invoice(qty=1, rate=99.98, do_not_submit=True)
+		si.is_opening = "Yes"
+		si.items[0].income_account = "Temporary Opening - _TC"
+		si.save()
+
+		liability_root = frappe.db.get_all(
+			"Account",
+			filters={"company": si.company, "root_type": "Liability", "disabled": 0},
+			order_by="lft",
+			limit=1,
+		)[0]
+
+		# setup round off account
+		company = frappe.get_doc("Company", si.company)
+		if acc := frappe.db.exists(
+			"Account",
+			{
+				"account_name": "Round Off for Opening",
+				"account_type": "Round Off for Opening",
+				"company": si.company,
+			},
+		):
+			company.round_off_for_opening = acc
+		else:
+			acc = frappe.new_doc("Account")
+			acc.company = si.company
+			acc.parent_account = liability_root.name
+			acc.account_name = "Round Off for Opening"
+			acc.account_type = "Round Off for Opening"
+			acc.save()
+			company.round_off_for_opening = acc.name
+		company.save()
+
+		si.reload()
+		si.submit()
+		res = frappe.db.get_all(
+			"GL Entry",
+			filters={"voucher_no": si.name, "is_opening": "Yes"},
+			fields=["account", "debit", "credit", "is_opening"],
+		)
+		self.assertEqual(len(res), 3)
+>>>>>>> 5021c7ca2c (test: rounding adjustment validation and posting)
 
 
 def set_advance_flag(company, flag, default_account):
