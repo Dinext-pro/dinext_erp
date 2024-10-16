@@ -1935,22 +1935,33 @@ class AccountsController(TransactionBase):
 
 		return stock_items
 
+<<<<<<< HEAD
 	def set_total_advance_paid(self):
 		ple = frappe.qb.DocType("Payment Ledger Entry")
 		party = self.customer if self.doctype == "Sales Order" else self.supplier
+=======
+	def calculate_total_advance_from_ledger(self):
+		adv = frappe.qb.DocType("Advance Payment Ledger Entry")
+>>>>>>> 2b2360bf7b (refactor: calculate advance from advance ledger)
 		advance = (
-			frappe.qb.from_(ple)
-			.select(ple.account_currency, Abs(Sum(ple.amount_in_account_currency)).as_("amount"))
+			frappe.qb.from_(adv)
+			.select(adv.currency, Abs(Sum(adv.amount)).as_("amount"))
 			.where(
-				(ple.against_voucher_type == self.doctype)
-				& (ple.against_voucher_no == self.name)
-				& (ple.party == party)
-				& (ple.delinked == 0)
-				& (ple.company == self.company)
+				(adv.against_voucher_type == self.doctype)
+				& (adv.against_voucher_no == self.name)
+				& (adv.company == self.company)
 			)
 			.run(as_dict=True)
 		)
+		return advance
 
+<<<<<<< HEAD
+=======
+	def set_total_advance_paid(self):
+		advance = self.calculate_total_advance_from_ledger()
+		advance_paid, order_total = None, None
+
+>>>>>>> 2b2360bf7b (refactor: calculate advance from advance ledger)
 		if advance:
 			advance = advance[0]
 
