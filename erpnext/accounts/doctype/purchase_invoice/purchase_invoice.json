@@ -1633,11 +1633,7 @@
  "idx": 204,
  "is_submittable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2024-09-11 12:59:19.130593",
-=======
  "modified": "2024-10-25 18:13:01.944477",
->>>>>>> 912e1e3f3d (fix: hide payment terms for return and paid purchase invoices)
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Invoice",
