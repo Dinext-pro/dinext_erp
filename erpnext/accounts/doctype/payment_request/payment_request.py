@@ -610,19 +610,7 @@ def make_payment_request(**args):
 				"party_type": party_type,
 				"party": args.get("party") or ref_doc.get("customer"),
 				"bank_account": bank_account,
-<<<<<<< HEAD
-=======
 				"party_name": args.get("party_name") or ref_doc.get("customer_name"),
-				"make_sales_invoice": (
-					args.make_sales_invoice  # new standard
-					or args.order_type == "Shopping Cart"  # compat for webshop app
-				),
-				"mute_email": (
-					args.mute_email  # new standard
-					or args.order_type == "Shopping Cart"  # compat for webshop app
-					or gateway_account.get("payment_channel", "Email") != "Email"
-				),
->>>>>>> 0acb609d97 (feat: add party name in payment request)
 			}
 		)
 
