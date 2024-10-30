@@ -110,11 +110,7 @@
  "is_virtual": 1,
  "istable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2023-11-17 17:33:34.818530",
-=======
  "modified": "2024-10-29 16:24:43.021230",
->>>>>>> 2d5b079949 (fix: remarks field in payment reconciliation)
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Reconciliation Payment",
