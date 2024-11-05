@@ -2588,6 +2588,7 @@ class AccountsController(TransactionBase):
 				doc.amount = amount if self.docstatus == 1 else -1 * amount
 				doc.event = "Submit" if self.docstatus == 1 else "Cancel"
 				doc.currency = x.account_currency
+				doc.flags.ignore_permissions = 1
 				doc.save()
 
 	def make_advance_payment_ledger_for_payment(self):
@@ -2610,6 +2611,7 @@ class AccountsController(TransactionBase):
 			doc.amount = x.allocated_amount if self.docstatus == 1 else -1 * x.allocated_amount
 			doc.currency = currency
 			doc.event = "Submit" if self.docstatus == 1 else "Cancel"
+			doc.flags.ignore_permissions = 1
 			doc.save()
 
 	def make_advance_payment_ledger_entries(self):
