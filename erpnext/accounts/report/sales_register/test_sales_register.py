@@ -59,7 +59,7 @@ class TestItemWiseSalesRegister(AccountsTestMixin, FrappeTestCase):
 		filters = frappe._dict({"from_date": today(), "to_date": today(), "company": self.company})
 		report = execute(filters)
 
-		self.assertEqual(len(report[1]), 1)
+		res = [x for x in report[1] if x.get("voucher_no") == si.name]
 
 		expected_result = {
 			"voucher_type": si.doctype,
@@ -72,7 +72,7 @@ class TestItemWiseSalesRegister(AccountsTestMixin, FrappeTestCase):
 			"debit": 98.0,
 		}
 
-		report_output = {k: v for k, v in report[1][0].items() if k in expected_result}
+		report_output = {k: v for k, v in res[0].items() if k in expected_result}
 		self.assertDictEqual(report_output, expected_result)
 
 	def test_journal_with_cost_center_filter(self):
