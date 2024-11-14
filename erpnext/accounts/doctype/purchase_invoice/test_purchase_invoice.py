@@ -2347,7 +2347,6 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 
 		frappe.db.set_single_value("Buying Settings", "maintain_same_rate", 1)
 
-<<<<<<< HEAD
 	def test_last_purchase_rate(self):
 		item = create_item("_Test Item For Last Purchase Rate from PI", is_stock_item=1)
 		pi1 = make_purchase_invoice(item_code=item.item_code, qty=10, rate=100)
@@ -2365,7 +2364,7 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 		pi1.cancel()
 		item.reload()
 		self.assertEqual(item.last_purchase_rate, 0)
-=======
+
 	def test_opening_invoice_rounding_adjustment_validation(self):
 		pi = make_purchase_invoice(do_not_save=1)
 		pi.items[0].rate = 99.98
@@ -2424,7 +2423,6 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 		]
 		self.assertEqual(len(actual), 3)
 		self.assertEqual(expected, actual)
->>>>>>> b7edc6dea9 (test: opening purchase invoice with rounding adjustment)
 
 
 def set_advance_flag(company, flag, default_account):

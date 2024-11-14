@@ -3924,7 +3924,6 @@ class TestSalesInvoice(FrappeTestCase):
 		self.assertEqual(len(res), 1)
 		self.assertEqual(res[0][0], pos_return.return_against)
 
-<<<<<<< HEAD
 	@change_settings("Accounts Settings", {"enable_common_party_accounting": True})
 	def test_common_party_with_foreign_currency_jv(self):
 		from erpnext.accounts.doctype.account.test_account import create_account
@@ -4033,7 +4032,7 @@ class TestSalesInvoice(FrappeTestCase):
 		)
 
 		self.assertTrue(all([x == "Credit Note" for x in gl_entries]))
-=======
+
 	def test_validation_on_opening_invoice_with_rounding(self):
 		si = create_sales_invoice(qty=1, rate=99.98, do_not_submit=True)
 		si.is_opening = "Yes"
@@ -4084,7 +4083,6 @@ class TestSalesInvoice(FrappeTestCase):
 			fields=["account", "debit", "credit", "is_opening"],
 		)
 		self.assertEqual(len(res), 3)
->>>>>>> 5021c7ca2c (test: rounding adjustment validation and posting)
 
 	def _create_opening_invoice_with_inclusive_tax(self):
 		si = create_sales_invoice(qty=1, rate=90, do_not_submit=True)

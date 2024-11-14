@@ -7,12 +7,7 @@ import copy
 import frappe
 from frappe import _
 from frappe.model.meta import get_field_precision
-<<<<<<< HEAD
-from frappe.utils import cint, flt, formatdate, getdate, now
-=======
 from frappe.utils import cint, flt, formatdate, get_link_to_form, getdate, now
-from frappe.utils.dashboard import cache_source
->>>>>>> 88e68168e3 (refactor: use separate round off for opening entries)
 
 import erpnext
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
