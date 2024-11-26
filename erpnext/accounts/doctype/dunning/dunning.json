@@ -400,11 +400,7 @@
  ],
  "is_submittable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2023-06-15 15:46:53.865712",
-=======
  "modified": "2024-11-26 13:46:07.760867",
->>>>>>> e094473c65 (feat(Dunning): separate tab "Address & Contact" (#44363))
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Dunning",
