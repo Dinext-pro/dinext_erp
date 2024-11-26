@@ -388,13 +388,8 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 			}
 			if (doc.status != "Closed") {
 				if (doc.status != "On Hold") {
-<<<<<<< HEAD
-					if (flt(doc.per_received) < 100 && allow_receipt) {
-						cur_frm.add_custom_button(
-=======
 					if (flt(doc.per_received, precision("per_received")) < 100 && allow_receipt) {
 						this.frm.add_custom_button(
->>>>>>> 1a1e2c7e01 (fix: use field precision instead of hardcoded precision in so and po)
 							__("Purchase Receipt"),
 							this.make_purchase_receipt,
 							__("Create")
@@ -419,14 +414,9 @@ erpnext.buying.PurchaseOrderController = class PurchaseOrderController extends (
 							}
 						}
 					}
-<<<<<<< HEAD
-					if (flt(doc.per_billed) < 100)
-						cur_frm.add_custom_button(
-=======
 					// Please do not add precision in the below flt function
 					if (flt(doc.per_billed, precision("per_billed")) < 100)
 						this.frm.add_custom_button(
->>>>>>> 1a1e2c7e01 (fix: use field precision instead of hardcoded precision in so and po)
 							__("Purchase Invoice"),
 							this.make_purchase_invoice,
 							__("Create")
