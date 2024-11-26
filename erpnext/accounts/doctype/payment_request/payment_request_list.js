@@ -12,6 +12,7 @@ frappe.listview_settings["Payment Request"] = {
 	add_fields: ["status"],
 	get_indicator: function (doc) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if (doc.status == "Draft") {
 			return [__("Draft"), "gray", "status,=,Draft"];
 		}
@@ -29,5 +30,10 @@ frappe.listview_settings["Payment Request"] = {
 =======
 		return [__(doc.status), INDICATORS[doc.status] || "gray", `status,=,${doc.status}`];
 >>>>>>> e1c4d6e1e6 (refactor: Used object to get payment request status indicator)
+=======
+		if (!doc.status || !INDICATORS[doc.status]) return;
+
+		return [__(doc.status), INDICATORS[doc.status], `status,=,${doc.status}`];
+>>>>>>> 37ceb09955 (revert: remove default `Payment Request` indicator color)
 	},
 };
