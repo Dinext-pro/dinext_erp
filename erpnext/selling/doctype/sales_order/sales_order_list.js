@@ -20,13 +20,7 @@ frappe.listview_settings["Sales Order"] = {
 			return [__("On Hold"), "orange", "status,=,On Hold"];
 		} else if (doc.status === "Completed") {
 			return [__("Completed"), "green", "status,=,Completed"];
-<<<<<<< HEAD
-		} else if (!doc.skip_delivery_note && flt(doc.per_delivered, 2) < 100) {
-=======
-		} else if (doc.advance_payment_status === "Requested") {
-			return [__("To Pay"), "gray", "advance_payment_status,=,Requested"];
 		} else if (!doc.skip_delivery_note && flt(doc.per_delivered) < 100) {
->>>>>>> eff9cd10cd (fix: remove field precision in SO and PO for percentage fields)
 			if (frappe.datetime.get_diff(doc.delivery_date) < 0) {
 				// not delivered & overdue
 				return [__("Overdue"), "red", "per_delivered,<,100|delivery_date,<,Today|status,!=,Closed"];
