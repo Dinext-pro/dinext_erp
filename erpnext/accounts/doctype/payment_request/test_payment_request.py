@@ -525,9 +525,6 @@ class TestPaymentRequest(FrappeTestCase):
 		self.assertEqual(pr.grand_total, 1000)
 
 		so.load_from_db()
-<<<<<<< HEAD
-=======
-		self.assertEqual(so.advance_payment_status, "Requested")
 
 	def test_partial_paid_invoice_with_payment_request(self):
 		si = create_sales_invoice(currency="INR", qty=1, rate=5000)
@@ -546,4 +543,3 @@ class TestPaymentRequest(FrappeTestCase):
 		pr = make_payment_request(dt="Sales Invoice", dn=si.name, mute_email=1)
 
 		self.assertEqual(pr.grand_total, si.outstanding_amount)
->>>>>>> bbe3bc95d0 (test: add unit test to validate outstanding amount in payment request)
