@@ -28,13 +28,10 @@ erpnext.financial_statements = {
 
 			return value;
 		} else if (frappe.query_report.get_filter_value("selected_view") == "Margin" && data) {
-<<<<<<< HEAD
-=======
 			if (column.fieldname == "stub" && data.account_name == __("Income")) {
 				//Taking the total income from each column (for all the financial years) as the base (100%)
 				this.baseData = row;
 			}
->>>>>>> b94af28587 (fix: link cash flow rows and fix summary linking)
 			if (column.colIndex >= 2) {
 				const marginPercent = data[column.fieldname];
 
