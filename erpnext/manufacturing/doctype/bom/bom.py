@@ -179,14 +179,7 @@ class BOM(WebsiteGenerator):
 			"BOM", filters={"name": ("like", search_key), "amended_from": ["is", "not set"]}, pluck="name"
 		)
 
-<<<<<<< HEAD
-		if existing_boms:
-			index = self.get_next_version_index(existing_boms)
-		else:
-			index = 1
-=======
 		index = self.get_index_for_bom(existing_boms)
->>>>>>> a5cc307417 (fix: BOM name issue (backport #44586) (#44589))
 
 		prefix = self.doctype
 		suffix = "%.3i" % index  # convert index to string (1 -> "001")
