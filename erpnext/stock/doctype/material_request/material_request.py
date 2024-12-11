@@ -267,6 +267,7 @@ class MaterialRequest(BuyingController):
 		mr_qty_allowance = frappe.db.get_single_value("Stock Settings", "mr_qty_allowance")
 
 		for d in self.get("items"):
+			precision = d.precision("ordered_qty")
 			if d.name in mr_items:
 				if self.material_request_type in ("Material Issue", "Material Transfer", "Customer Provided"):
 					d.ordered_qty = flt(mr_items_ordered_qty.get(d.name))
@@ -276,14 +277,14 @@ class MaterialRequest(BuyingController):
 							(d.qty + (d.qty * (mr_qty_allowance / 100))), d.precision("ordered_qty")
 						)
 
-						if d.ordered_qty and d.ordered_qty > allowed_qty:
+						if d.ordered_qty and flt(d.ordered_qty, precision) > flt(allowed_qty, precision):
 							frappe.throw(
 								_(
 									"The total Issue / Transfer quantity {0} in Material Request {1}  cannot be greater than allowed requested quantity {2} for Item {3}"
 								).format(d.ordered_qty, d.parent, allowed_qty, d.item_code)
 							)
 
-					elif d.ordered_qty and d.ordered_qty > d.stock_qty:
+					elif d.ordered_qty and flt(d.ordered_qty, precision) > flt(d.stock_qty, precision):
 						frappe.throw(
 							_(
 								"The total Issue / Transfer quantity {0} in Material Request {1} cannot be greater than requested quantity {2} for Item {3}"
@@ -377,7 +378,9 @@ def set_missing_values(source, target_doc):
 
 def update_item(obj, target, source_parent):
 	target.conversion_factor = obj.conversion_factor
-	target.qty = flt(flt(obj.stock_qty) - flt(obj.ordered_qty)) / target.conversion_factor
+
+	qty = obj.received_qty or obj.ordered_qty
+	target.qty = flt(flt(obj.stock_qty) - flt(qty)) / target.conversion_factor
 	target.stock_qty = target.qty * target.conversion_factor
 	if getdate(target.schedule_date) < getdate(nowdate()):
 		target.schedule_date = None
@@ -429,7 +432,9 @@ def make_purchase_order(source_name, target_doc=None, args=None):
 		filtered_items = args.get("filtered_children", [])
 		child_filter = d.name in filtered_items if filtered_items else True
 
-		return d.ordered_qty < d.stock_qty and child_filter
+		qty = d.received_qty or d.ordered_qty
+
+		return qty < d.stock_qty and child_filter
 
 	doclist = get_mapped_doc(
 		"Material Request",

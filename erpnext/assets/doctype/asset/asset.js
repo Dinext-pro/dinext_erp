@@ -213,7 +213,7 @@ frappe.ui.form.on("Asset", {
 			<div class="row">
 				<div class="col-xs-12 col-sm-6">
 					<span class="indicator whitespace-nowrap red">
-						<span>Failed to post depreciation entries</span>
+						<span>${__("Failed to post depreciation entries")}</span>
 					</span>
 				</div>
 			</div>`;
@@ -416,7 +416,7 @@ frappe.ui.form.on("Asset", {
 		}
 
 		frm.dashboard.render_graph({
-			title: "Asset Value",
+			title: __("Asset Value"),
 			data: {
 				labels: x_intervals,
 				datasets: [
@@ -506,6 +506,7 @@ frappe.ui.form.on("Asset", {
 	create_asset_repair: function (frm) {
 		frappe.call({
 			args: {
+				company: frm.doc.company,
 				asset: frm.doc.name,
 				asset_name: frm.doc.asset_name,
 			},
@@ -520,6 +521,7 @@ frappe.ui.form.on("Asset", {
 	create_asset_capitalization: function (frm) {
 		frappe.call({
 			args: {
+				company: frm.doc.company,
 				asset: frm.doc.name,
 				asset_name: frm.doc.asset_name,
 				item_code: frm.doc.item_code,
@@ -528,6 +530,7 @@ frappe.ui.form.on("Asset", {
 			callback: function (r) {
 				var doclist = frappe.model.sync(r.message);
 				frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+				$(".primary-action").prop("hidden", false);
 			},
 		});
 	},
@@ -669,6 +672,11 @@ frappe.ui.form.on("Asset", {
 			frm.set_value("cost_center", item.cost_center || purchase_doc.cost_center);
 			if (item.asset_location) {
 				frm.set_value("location", item.asset_location);
+			}
+			if (doctype === "Purchase Receipt") {
+				frm.set_value("purchase_receipt_item", item.name);
+			} else if (doctype === "Purchase Invoice") {
+				frm.set_value("purchase_invoice_item", item.name);
 			}
 		});
 	},

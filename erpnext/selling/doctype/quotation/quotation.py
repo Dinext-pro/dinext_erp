@@ -50,6 +50,7 @@ class Quotation(SellingController):
 		company: DF.Link
 		company_address: DF.Link | None
 		company_address_display: DF.SmallText | None
+		company_contact_person: DF.Link | None
 		competitors: DF.TableMultiSelect[CompetitorDetail]
 		contact_display: DF.SmallText | None
 		contact_email: DF.Data | None
@@ -61,6 +62,7 @@ class Quotation(SellingController):
 		customer_address: DF.Link | None
 		customer_group: DF.Link | None
 		customer_name: DF.Data | None
+		disable_rounded_total: DF.Check
 		discount_amount: DF.Currency
 		enq_det: DF.Text | None
 		grand_total: DF.Currency
@@ -220,6 +222,10 @@ class Quotation(SellingController):
 				"Lead", self.party_name, ["lead_name", "company_name"]
 			)
 			self.customer_name = company_name or lead_name
+		elif self.party_name and self.quotation_to == "Prospect":
+			self.customer_name = self.party_name
+		elif self.party_name and self.quotation_to == "CRM Deal":
+			self.customer_name = frappe.db.get_value("CRM Deal", self.party_name, "organization")
 
 	def update_opportunity(self, status):
 		for opportunity in set(d.prevdoc_docname for d in self.get("items")):
@@ -347,8 +353,8 @@ def make_sales_order(source_name: str, target_doc=None):
 	return _make_sales_order(source_name, target_doc)
 
 
-def _make_sales_order(source_name, target_doc=None, customer_group=None, ignore_permissions=False):
-	customer = _make_customer(source_name, ignore_permissions, customer_group)
+def _make_sales_order(source_name, target_doc=None, ignore_permissions=False):
+	customer = _make_customer(source_name, ignore_permissions)
 	ordered_items = frappe._dict(
 		frappe.db.get_all(
 			"Sales Order Item",
@@ -365,23 +371,24 @@ def _make_sales_order(source_name, target_doc=None, customer_group=None, ignore_
 		if customer:
 			target.customer = customer.name
 			target.customer_name = customer.customer_name
+
+			# sales team
+			if not target.get("sales_team"):
+				for d in customer.get("sales_team") or []:
+					target.append(
+						"sales_team",
+						{
+							"sales_person": d.sales_person,
+							"allocated_percentage": d.allocated_percentage or None,
+							"commission_rate": d.commission_rate,
+						},
+					)
+
 		if source.referral_sales_partner:
 			target.sales_partner = source.referral_sales_partner
 			target.commission_rate = frappe.get_value(
 				"Sales Partner", source.referral_sales_partner, "commission_rate"
 			)
-
-		# sales team
-		if not target.get("sales_team"):
-			for d in customer.get("sales_team") or []:
-				target.append(
-					"sales_team",
-					{
-						"sales_person": d.sales_person,
-						"allocated_percentage": d.allocated_percentage or None,
-						"commission_rate": d.commission_rate,
-					},
-				)
 
 		target.flags.ignore_permissions = ignore_permissions
 		target.run_method("set_missing_values")
@@ -426,7 +433,7 @@ def _make_sales_order(source_name, target_doc=None, customer_group=None, ignore_
 				"postprocess": update_item,
 				"condition": can_map_row,
 			},
-			"Sales Taxes and Charges": {"doctype": "Sales Taxes and Charges", "add_if_empty": True},
+			"Sales Taxes and Charges": {"doctype": "Sales Taxes and Charges", "reset_value": True},
 			"Sales Team": {"doctype": "Sales Team", "add_if_empty": True},
 			"Payment Schedule": {"doctype": "Payment Schedule", "add_if_empty": True},
 		},
@@ -491,7 +498,7 @@ def _make_sales_invoice(source_name, target_doc=None, ignore_permissions=False):
 				"postprocess": update_item,
 				"condition": lambda row: not row.is_alternative,
 			},
-			"Sales Taxes and Charges": {"doctype": "Sales Taxes and Charges", "add_if_empty": True},
+			"Sales Taxes and Charges": {"doctype": "Sales Taxes and Charges", "reset_value": True},
 			"Sales Team": {"doctype": "Sales Team", "add_if_empty": True},
 		},
 		target_doc,
@@ -502,51 +509,71 @@ def _make_sales_invoice(source_name, target_doc=None, ignore_permissions=False):
 	return doclist
 
 
-def _make_customer(source_name, ignore_permissions=False, customer_group=None):
+def _make_customer(source_name, ignore_permissions=False):
 	quotation = frappe.db.get_value(
-		"Quotation", source_name, ["order_type", "party_name", "customer_name"], as_dict=1
+		"Quotation",
+		source_name,
+		["order_type", "quotation_to", "party_name", "customer_name"],
+		as_dict=1,
 	)
 
-	if quotation and quotation.get("party_name"):
-		if not frappe.db.exists("Customer", quotation.get("party_name")):
-			lead_name = quotation.get("party_name")
-			customer_name = frappe.db.get_value(
-				"Customer", {"lead_name": lead_name}, ["name", "customer_name"], as_dict=True
-			)
-			if not customer_name:
-				from erpnext.crm.doctype.lead.lead import _make_customer
+	if quotation.quotation_to == "Customer":
+		return frappe.get_doc("Customer", quotation.party_name)
 
-				customer_doclist = _make_customer(lead_name, ignore_permissions=ignore_permissions)
-				customer = frappe.get_doc(customer_doclist)
-				customer.flags.ignore_permissions = ignore_permissions
-				customer.customer_group = customer_group
+	# Check if a Customer already exists for the Lead or Prospect.
+	existing_customer = None
+	if quotation.quotation_to == "Lead":
+		existing_customer = frappe.db.get_value("Customer", {"lead_name": quotation.party_name})
+	elif quotation.quotation_to == "Prospect":
+		existing_customer = frappe.db.get_value("Customer", {"prospect_name": quotation.party_name})
 
-				try:
-					customer.insert()
-					return customer
-				except frappe.NameError:
-					if frappe.defaults.get_global_default("cust_master_name") == "Customer Name":
-						customer.run_method("autoname")
-						customer.name += "-" + lead_name
-						customer.insert()
-						return customer
-					else:
-						raise
-				except frappe.MandatoryError as e:
-					mandatory_fields = e.args[0].split(":")[1].split(",")
-					mandatory_fields = [customer.meta.get_label(field.strip()) for field in mandatory_fields]
+	if existing_customer:
+		return frappe.get_doc("Customer", existing_customer)
 
-					frappe.local.message_log = []
-					lead_link = frappe.utils.get_link_to_form("Lead", lead_name)
-					message = (
-						_("Could not auto create Customer due to the following missing mandatory field(s):")
-						+ "<br>"
-					)
-					message += "<br><ul><li>" + "</li><li>".join(mandatory_fields) + "</li></ul>"
-					message += _("Please create Customer from Lead {0}.").format(lead_link)
+	# If no Customer exists, create a new Customer or Prospect.
+	if quotation.quotation_to == "Lead":
+		return create_customer_from_lead(quotation.party_name, ignore_permissions=ignore_permissions)
+	elif quotation.quotation_to == "Prospect":
+		return create_customer_from_prospect(quotation.party_name, ignore_permissions=ignore_permissions)
 
-					frappe.throw(message, title=_("Mandatory Missing"))
-			else:
-				return customer_name
-		else:
-			return frappe.get_doc("Customer", quotation.get("party_name"))
+	return None
+
+
+def create_customer_from_lead(lead_name, ignore_permissions=False):
+	from erpnext.crm.doctype.lead.lead import _make_customer
+
+	customer = _make_customer(lead_name, ignore_permissions=ignore_permissions)
+	customer.flags.ignore_permissions = ignore_permissions
+
+	try:
+		customer.insert()
+		return customer
+	except frappe.MandatoryError as e:
+		handle_mandatory_error(e, customer, lead_name)
+
+
+def create_customer_from_prospect(prospect_name, ignore_permissions=False):
+	from erpnext.crm.doctype.prospect.prospect import make_customer as make_customer_from_prospect
+
+	customer = make_customer_from_prospect(prospect_name)
+	customer.flags.ignore_permissions = ignore_permissions
+
+	try:
+		customer.insert()
+		return customer
+	except frappe.MandatoryError as e:
+		handle_mandatory_error(e, customer, prospect_name)
+
+
+def handle_mandatory_error(e, customer, lead_name):
+	from frappe.utils import get_link_to_form
+
+	mandatory_fields = e.args[0].split(":")[1].split(",")
+	mandatory_fields = [_(customer.meta.get_label(field.strip())) for field in mandatory_fields]
+
+	frappe.local.message_log = []
+	message = _("Could not auto create Customer due to the following missing mandatory field(s):") + "<br>"
+	message += "<br><ul><li>" + "</li><li>".join(mandatory_fields) + "</li></ul>"
+	message += _("Please create Customer from Lead {0}.").format(get_link_to_form("Lead", lead_name))
+
+	frappe.throw(message, title=_("Mandatory Missing"))

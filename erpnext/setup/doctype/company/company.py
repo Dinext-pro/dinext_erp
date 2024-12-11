@@ -91,6 +91,7 @@ class Company(NestedSet):
 		rgt: DF.Int
 		round_off_account: DF.Link | None
 		round_off_cost_center: DF.Link | None
+		round_off_for_opening: DF.Link | None
 		sales_monthly_history: DF.SmallText | None
 		series_for_depreciation_entry: DF.Data | None
 		stock_adjustment_account: DF.Link | None
@@ -203,7 +204,7 @@ class Company(NestedSet):
 		):
 			frappe.throw(
 				_("'{0}' should be in company currency {1}.").format(
-					frappe.bold("Default Advance Received Account"), frappe.bold(self.default_currency)
+					frappe.bold(_("Default Advance Received Account")), frappe.bold(self.default_currency)
 				)
 			)
 
@@ -214,7 +215,7 @@ class Company(NestedSet):
 		):
 			frappe.throw(
 				_("'{0}' should be in company currency {1}.").format(
-					frappe.bold("Default Advance Paid Account"), frappe.bold(self.default_currency)
+					frappe.bold(_("Default Advance Paid Account")), frappe.bold(self.default_currency)
 				)
 			)
 
@@ -447,7 +448,7 @@ class Company(NestedSet):
 			):
 				frappe.throw(
 					_("Set default {0} account for non stock items").format(
-						frappe.bold("Provisional Account")
+						frappe.bold(_("Provisional Account"))
 					)
 				)
 

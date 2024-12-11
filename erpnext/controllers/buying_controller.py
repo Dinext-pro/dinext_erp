@@ -356,13 +356,13 @@ class BuyingController(SubcontractingController):
 		if not self.is_internal_transfer():
 			return
 
+		self.set_sales_incoming_rate_for_internal_transfer()
+
 		allow_at_arms_length_price = frappe.get_cached_value(
 			"Stock Settings", None, "allow_internal_transfer_at_arms_length_price"
 		)
 		if allow_at_arms_length_price:
 			return
-
-		self.set_sales_incoming_rate_for_internal_transfer()
 
 		for d in self.get("items"):
 			d.discount_percentage = 0.0
@@ -689,9 +689,11 @@ class BuyingController(SubcontractingController):
 		if self.doctype in ["Purchase Receipt", "Purchase Invoice"]:
 			self.process_fixed_asset()
 
-		if self.doctype in ["Purchase Order", "Purchase Receipt"] and not frappe.db.get_single_value(
-			"Buying Settings", "disable_last_purchase_rate"
-		):
+		if self.doctype in [
+			"Purchase Order",
+			"Purchase Receipt",
+			"Purchase Invoice",
+		] and not frappe.db.get_single_value("Buying Settings", "disable_last_purchase_rate"):
 			update_last_purchase_rate(self, is_submit=1)
 
 	def on_cancel(self):
@@ -700,9 +702,11 @@ class BuyingController(SubcontractingController):
 		if self.get("is_return"):
 			return
 
-		if self.doctype in ["Purchase Order", "Purchase Receipt"] and not frappe.db.get_single_value(
-			"Buying Settings", "disable_last_purchase_rate"
-		):
+		if self.doctype in [
+			"Purchase Order",
+			"Purchase Receipt",
+			"Purchase Invoice",
+		] and not frappe.db.get_single_value("Buying Settings", "disable_last_purchase_rate"):
 			update_last_purchase_rate(self, is_submit=0)
 
 		if self.doctype in ["Purchase Receipt", "Purchase Invoice"]:
@@ -820,6 +824,8 @@ class BuyingController(SubcontractingController):
 				"asset_quantity": asset_quantity,
 				"purchase_receipt": self.name if self.doctype == "Purchase Receipt" else None,
 				"purchase_invoice": self.name if self.doctype == "Purchase Invoice" else None,
+				"purchase_receipt_item": row.name if self.doctype == "Purchase Receipt" else None,
+				"purchase_invoice_item": row.name if self.doctype == "Purchase Invoice" else None,
 			}
 		)
 
