@@ -38,11 +38,7 @@
    "table_fieldname": "competitors"
   }
  ],
-<<<<<<< HEAD
- "modified": "2023-11-23 19:33:54.284279",
-=======
  "modified": "2024-12-10 08:26:38.496003",
->>>>>>> 4d5241486f (fix: permissions for marking Quotation as lost)
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Competitor",
