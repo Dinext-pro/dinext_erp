@@ -3,12 +3,8 @@ from collections import defaultdict
 
 import frappe
 from frappe.query_builder.functions import CombineDatetime, Sum
-<<<<<<< HEAD
-from frappe.utils import flt
-from frappe.utils.deprecations import deprecated
-=======
 from frappe.utils import flt, nowtime
->>>>>>> 079b86044e (fix: posting_time issue (#44870))
+from frappe.utils.deprecations import deprecated
 from pypika import Order
 
 
