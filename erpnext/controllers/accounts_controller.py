@@ -473,6 +473,9 @@ class AccountsController(TransactionBase):
 			self.payment_terms_template = ""
 			self.payment_schedule = []
 
+		if self.is_return:
+			return
+
 		self.validate_payment_schedule_dates()
 		self.set_due_date()
 		self.set_payment_schedule()
@@ -2346,6 +2349,9 @@ class AccountsController(TransactionBase):
 		dates = []
 		li = []
 
+		if self.doctype == "Sales Invoice" and self.is_pos:
+			return
+
 		for d in self.get("payment_schedule"):
 			if self.doctype == "Sales Order" and getdate(d.due_date) < getdate(self.transaction_date):
 				frappe.throw(
@@ -2362,6 +2368,9 @@ class AccountsController(TransactionBase):
 			frappe.throw(_("Rows with duplicate due dates in other rows were found: {0}").format(duplicates))
 
 	def validate_payment_schedule_amount(self):
+		if (self.doctype == "Sales Invoice" and self.is_pos) or self.get("is_opening") == "Yes":
+			return
+
 		party_account_currency = self.get("party_account_currency")
 		if not party_account_currency:
 			party_type, party = self.get_party()
