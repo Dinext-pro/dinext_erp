@@ -147,11 +147,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2021-06-29 00:30:30.621636",
-=======
  "modified": "2024-12-05 15:44:21.520093",
->>>>>>> 5a284df51d (refactor: Order Number and Order Date fields to Blanket Order)
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Blanket Order",
