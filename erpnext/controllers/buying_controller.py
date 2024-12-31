@@ -745,11 +745,8 @@ class BuyingController(SubcontractingController):
 	def auto_make_assets(self, asset_items):
 		items_data = get_asset_item_details(asset_items)
 		messages = []
-<<<<<<< HEAD
-=======
 		alert = False
 		accounting_dimensions = get_dimensions(with_cost_center_and_project=True)
->>>>>>> 079ec864de (fix: copy accounting dimensions to asset and sales invoice (#44964))
 
 		for d in self.items:
 			if d.is_fixed_asset:
