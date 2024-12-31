@@ -138,8 +138,8 @@ class calculate_taxes_and_totals:
 	def update_item_tax_map(self):
 		for item in self.doc.items:
 			item.item_tax_rate = get_item_tax_map(
-				doc=self.doc,
-				tax_template=item.item_tax_template,
+				company=self.doc.get("company"),
+				item_tax_template=item.item_tax_template,
 				as_json=True,
 			)
 

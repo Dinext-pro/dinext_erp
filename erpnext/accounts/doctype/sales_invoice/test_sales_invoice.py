@@ -2875,8 +2875,8 @@ class TestSalesInvoice(FrappeTestCase):
 
 		sales_invoice = create_sales_invoice(item="T Shirt", rate=700, do_not_submit=True)
 		item_tax_map = get_item_tax_map(
-			doc=sales_invoice,
-			tax_template=sales_invoice.items[0].item_tax_template,
+			company=sales_invoice.company,
+			item_tax_template=sales_invoice.items[0].item_tax_template,
 		)
 
 		self.assertEqual(sales_invoice.items[0].item_tax_template, "_Test Account Excise Duty @ 12 - _TC")
@@ -2888,8 +2888,8 @@ class TestSalesInvoice(FrappeTestCase):
 		sales_invoice.save()
 
 		item_tax_map = get_item_tax_map(
-			doc=sales_invoice,
-			tax_template=sales_invoice.items[0].item_tax_template,
+			company=sales_invoice.company,
+			item_tax_template=sales_invoice.items[0].item_tax_template,
 		)
 
 		self.assertEqual(sales_invoice.items[0].item_tax_template, "_Test Account Excise Duty @ 10 - _TC")
