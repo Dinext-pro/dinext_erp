@@ -813,6 +813,7 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 	}
 
 	validate() {
+		this.apply_pricing_rule()
 		this.calculate_taxes_and_totals(false);
 	}
 
@@ -974,6 +975,7 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 	}
 
 	transaction_date() {
+		this.apply_pricing_rule()
 		if (this.frm.doc.transaction_date) {
 			this.frm.transaction_date = this.frm.doc.transaction_date;
 			frappe.ui.form.trigger(this.frm.doc.doctype, "currency");
@@ -982,6 +984,7 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 
 	posting_date() {
 		var me = this;
+		me.apply_pricing_rule()
 		if (this.frm.doc.posting_date) {
 			this.frm.posting_date = this.frm.doc.posting_date;
 
