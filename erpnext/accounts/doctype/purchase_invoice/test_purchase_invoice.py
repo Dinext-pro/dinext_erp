@@ -2494,6 +2494,55 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 		self.assertEqual(len(actual), 3)
 		self.assertEqual(expected, actual)
 
+<<<<<<< HEAD
+=======
+	def test_last_purchase_rate(self):
+		item = create_item("_Test Item For Last Purchase Rate from PI", is_stock_item=1)
+		pi1 = make_purchase_invoice(item_code=item.item_code, qty=10, rate=100)
+		item.reload()
+		self.assertEqual(item.last_purchase_rate, 100)
+
+		pi2 = make_purchase_invoice(item_code=item.item_code, qty=10, rate=200)
+		item.reload()
+		self.assertEqual(item.last_purchase_rate, 200)
+
+		pi2.cancel()
+		item.reload()
+		self.assertEqual(item.last_purchase_rate, 100)
+
+		pi1.cancel()
+		item.reload()
+		self.assertEqual(item.last_purchase_rate, 0)
+
+	def test_invoice_against_returned_pr(self):
+		from erpnext.stock.doctype.item.test_item import make_item
+		from erpnext.stock.doctype.purchase_receipt.purchase_receipt import (
+			make_purchase_invoice as make_purchase_invoice_from_pr,
+		)
+		from erpnext.stock.doctype.purchase_receipt.purchase_receipt import (
+			make_purchase_return_against_rejected_warehouse,
+		)
+
+		item = make_item("_Test Item For Invoice Against Returned PR", properties={"is_stock_item": 1}).name
+
+		original_value = frappe.db.get_single_value(
+			"Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice"
+		)
+		frappe.db.set_single_value("Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice", 0)
+
+		pr = make_purchase_receipt(item_code=item, qty=5, rejected_qty=5, rate=100)
+		pr_return = make_purchase_return_against_rejected_warehouse(pr.name)
+		pr_return.submit()
+
+		pi = make_purchase_invoice_from_pr(pr.name)
+		pi.save()
+		self.assertEqual(pi.items[0].qty, 5.0)
+
+		frappe.db.set_single_value(
+			"Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice", original_value
+		)
+
+>>>>>>> d5babf4237 (fix: invoice against purchase receipt with returned quantity)
 
 def set_advance_flag(company, flag, default_account):
 	frappe.db.set_value(
