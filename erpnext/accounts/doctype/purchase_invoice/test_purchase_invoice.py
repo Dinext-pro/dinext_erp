@@ -2494,26 +2494,6 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 		self.assertEqual(len(actual), 3)
 		self.assertEqual(expected, actual)
 
-<<<<<<< HEAD
-=======
-	def test_last_purchase_rate(self):
-		item = create_item("_Test Item For Last Purchase Rate from PI", is_stock_item=1)
-		pi1 = make_purchase_invoice(item_code=item.item_code, qty=10, rate=100)
-		item.reload()
-		self.assertEqual(item.last_purchase_rate, 100)
-
-		pi2 = make_purchase_invoice(item_code=item.item_code, qty=10, rate=200)
-		item.reload()
-		self.assertEqual(item.last_purchase_rate, 200)
-
-		pi2.cancel()
-		item.reload()
-		self.assertEqual(item.last_purchase_rate, 100)
-
-		pi1.cancel()
-		item.reload()
-		self.assertEqual(item.last_purchase_rate, 0)
-
 	def test_invoice_against_returned_pr(self):
 		from erpnext.stock.doctype.item.test_item import make_item
 		from erpnext.stock.doctype.purchase_receipt.purchase_receipt import (
@@ -2542,7 +2522,6 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 			"Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice", original_value
 		)
 
->>>>>>> d5babf4237 (fix: invoice against purchase receipt with returned quantity)
 
 def set_advance_flag(company, flag, default_account):
 	frappe.db.set_value(
