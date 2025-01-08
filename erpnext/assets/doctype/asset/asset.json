@@ -595,11 +595,7 @@
    "link_fieldname": "target_asset"
   }
  ],
-<<<<<<< HEAD
- "modified": "2024-08-26 23:28:29.095139",
-=======
  "modified": "2024-12-26 14:23:20.968882",
->>>>>>> 6850019649 (feat: work in progress status for asset (#45066))
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset",
