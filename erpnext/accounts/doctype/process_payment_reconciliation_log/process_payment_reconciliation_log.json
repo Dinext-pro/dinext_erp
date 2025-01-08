@@ -109,11 +109,7 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2023-11-02 11:32:12.254018",
-=======
  "modified": "2025-01-08 08:22:19.104975",
->>>>>>> 4620025dcd (chore: remove 'Experimental' tag)
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Process Payment Reconciliation Log",
