@@ -1671,7 +1671,7 @@ class TestPaymentReconciliation(FrappeTestCase):
 			{
 				"book_advance_payments_in_separate_party_account": 1,
 				"default_advance_paid_account": self.advance_payable_account,
-				"reconcile_on_advance_payment_date": 1,
+				"reconciliation_takes_effect_on": "Advance Payment Date",
 			},
 		)
 
@@ -1720,7 +1720,7 @@ class TestPaymentReconciliation(FrappeTestCase):
 			{
 				"book_advance_payments_in_separate_party_account": 1,
 				"default_advance_received_account": self.advance_receivable_account,
-				"reconcile_on_advance_payment_date": 0,
+				"reconciliation_takes_effect_on": "Oldest Of Invoice Or Advance",
 			},
 		)
 		amount = 200.0
@@ -1829,7 +1829,7 @@ class TestPaymentReconciliation(FrappeTestCase):
 			{
 				"book_advance_payments_in_separate_party_account": 1,
 				"default_advance_paid_account": self.advance_payable_account,
-				"reconcile_on_advance_payment_date": 0,
+				"reconciliation_takes_effect_on": "Oldest Of Invoice Or Advance",
 			},
 		)
 		amount = 200.0
