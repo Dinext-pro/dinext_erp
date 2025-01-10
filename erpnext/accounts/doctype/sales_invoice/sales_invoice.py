@@ -321,9 +321,7 @@ class SalesInvoice(SellingController):
 		self.set_against_income_account()
 		self.validate_time_sheets_are_submitted()
 		self.validate_multiple_billing("Delivery Note", "dn_detail", "amount")
-		if not self.is_return:
-			self.validate_serial_numbers()
-		else:
+		if self.is_return:
 			self.timesheets = []
 		self.update_packing_list()
 		self.set_billing_hours_and_amount()
@@ -1706,6 +1704,7 @@ class SalesInvoice(SellingController):
 		self.set("write_off_amount", reference_doc.get("write_off_amount"))
 		self.due_date = None
 
+<<<<<<< HEAD
 	def validate_serial_numbers(self):
 		"""
 		validate serial number agains Delivery Note and Sales Invoice
@@ -1753,6 +1752,8 @@ class SalesInvoice(SellingController):
 					)
 				)
 
+=======
+>>>>>>> 61efb2bb39 (fix: delivery_document_no column issue)
 	def update_project(self):
 		unique_projects = list(set([d.project for d in self.get("items") if d.project]))
 		if self.project and self.project not in unique_projects:
