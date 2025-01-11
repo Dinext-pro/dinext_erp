@@ -1704,56 +1704,6 @@ class SalesInvoice(SellingController):
 		self.set("write_off_amount", reference_doc.get("write_off_amount"))
 		self.due_date = None
 
-<<<<<<< HEAD
-	def validate_serial_numbers(self):
-		"""
-		validate serial number agains Delivery Note and Sales Invoice
-		"""
-		self.set_serial_no_against_delivery_note()
-		self.validate_serial_against_delivery_note()
-
-	def set_serial_no_against_delivery_note(self):
-		for item in self.items:
-			if item.serial_no and item.delivery_note and item.qty != len(get_serial_nos(item.serial_no)):
-				item.serial_no = get_delivery_note_serial_no(item.item_code, item.qty, item.delivery_note)
-
-	def validate_serial_against_delivery_note(self):
-		"""
-		validate if the serial numbers in Sales Invoice Items are same as in
-		Delivery Note Item
-		"""
-
-		for item in self.items:
-			if not item.delivery_note or not item.dn_detail:
-				continue
-
-			serial_nos = frappe.db.get_value("Delivery Note Item", item.dn_detail, "serial_no") or ""
-			dn_serial_nos = set(get_serial_nos(serial_nos))
-
-			serial_nos = item.serial_no or ""
-			si_serial_nos = set(get_serial_nos(serial_nos))
-			serial_no_diff = si_serial_nos - dn_serial_nos
-
-			if serial_no_diff:
-				dn_link = frappe.utils.get_link_to_form("Delivery Note", item.delivery_note)
-				serial_no_msg = ", ".join(frappe.bold(d) for d in serial_no_diff)
-
-				msg = _("Row #{0}: The following Serial Nos are not present in Delivery Note {1}:").format(
-					item.idx, dn_link
-				)
-				msg += " " + serial_no_msg
-
-				frappe.throw(msg=msg, title=_("Serial Nos Mismatch"))
-
-			if item.serial_no and cint(item.qty) != len(si_serial_nos):
-				frappe.throw(
-					_("Row #{0}: {1} Serial numbers required for Item {2}. You have provided {3}.").format(
-						item.idx, item.qty, item.item_code, len(si_serial_nos)
-					)
-				)
-
-=======
->>>>>>> 61efb2bb39 (fix: delivery_document_no column issue)
 	def update_project(self):
 		unique_projects = list(set([d.project for d in self.get("items") if d.project]))
 		if self.project and self.project not in unique_projects:
