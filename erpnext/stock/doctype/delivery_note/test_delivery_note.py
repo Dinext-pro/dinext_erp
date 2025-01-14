@@ -2406,12 +2406,6 @@ class TestDeliveryNote(FrappeTestCase):
 			if row.item_code == serial_item.name:
 				self.assertTrue(row.serial_no)
 
-<<<<<<< HEAD
-=======
-			if row.item_code == batch_serial_item.name:
-				self.assertTrue(row.batch_no)
-				self.assertTrue(row.serial_no)
-
 	def test_delivery_note_return_for_batch_item_with_different_warehouse(self):
 		from erpnext.stock.doctype.delivery_note.delivery_note import make_sales_return
 		from erpnext.stock.doctype.warehouse.test_warehouse import create_warehouse
@@ -2482,7 +2476,6 @@ class TestDeliveryNote(FrappeTestCase):
 			for d in bundle_data:
 				self.assertEqual(d.incoming_rate, batch_no_valuation[d.batch_no])
 
->>>>>>> 3a2e816759 (fix: incorrect valuation for sales return with different warhouse)
 
 def create_delivery_note(**args):
 	dn = frappe.new_doc("Delivery Note")
