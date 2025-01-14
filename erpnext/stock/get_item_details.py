@@ -115,20 +115,15 @@ def get_item_details(args, doc=None, for_validate=False, overwrite_warehouse=Tru
 
 	out.update(data)
 
-<<<<<<< HEAD
-	if args.transaction_date and item.lead_time_days:
-		out.schedule_date = out.lead_time_date = add_days(args.transaction_date, item.lead_time_days)
-=======
 	if (
 		frappe.db.get_single_value("Stock Settings", "auto_create_serial_and_batch_bundle_for_outward")
-		and not ctx.get("serial_and_batch_bundle")
-		and (ctx.get("use_serial_batch_fields") or ctx.get("doctype") == "POS Invoice")
+		and not args.get("serial_and_batch_bundle")
+		and (args.get("use_serial_batch_fields") or args.get("doctype") == "POS Invoice")
 	):
-		update_stock(ctx, out, doc)
-
-	if ctx.transaction_date and item.lead_time_days:
-		out.schedule_date = out.lead_time_date = add_days(ctx.transaction_date, item.lead_time_days)
->>>>>>> 88ab9be79c (fix: auto fetch batch and serial no for draft stock transactions)
+		update_stock(args, out, doc)
+	
+	if args.transaction_date and item.lead_time_days:
+		out.schedule_date = out.lead_time_date = add_days(args.transaction_date, item.lead_time_days)
 
 	if args.get("is_subcontracted"):
 		out.bom = args.get("bom") or get_default_bom(args.item_code)
@@ -167,11 +162,19 @@ def set_valuation_rate(out, args):
 		out.update(get_valuation_rate(args.item_code, args.company, out.get("warehouse")))
 
 
-<<<<<<< HEAD
 def update_bin_details(args, out, doc):
 	if args.get("doctype") == "Material Request" and args.get("material_request_type") == "Material Transfer":
 		out.update(get_bin_details(args.item_code, args.get("from_warehouse")))
-=======
+
+	elif out.get("warehouse"):
+		company = args.company if (doc and doc.get("doctype") == "Purchase Order") else None
+
+		# calculate company_total_stock only for po
+		bin_details = get_bin_details(args.item_code, out.warehouse, company, include_child_warehouses=True)
+
+		out.update(bin_details)
+
+
 def update_stock(ctx, out, doc=None):
 	from erpnext.stock.doctype.batch.batch import get_available_batches
 	from erpnext.stock.doctype.serial_no.serial_no import get_serial_nos_for_outward
@@ -256,20 +259,6 @@ def get_filtered_serial_nos(serial_nos, doc):
 					serial_nos.remove(serial_no)
 
 	return serial_nos
-
-
-def update_bin_details(ctx: ItemDetailsCtx, out: ItemDetails, doc):
-	if ctx.doctype == "Material Request" and ctx.material_request_type == "Material Transfer":
-		out.update(get_bin_details(ctx.item_code, ctx.from_warehouse))
->>>>>>> 88ab9be79c (fix: auto fetch batch and serial no for draft stock transactions)
-
-	elif out.get("warehouse"):
-		company = args.company if (doc and doc.get("doctype") == "Purchase Order") else None
-
-		# calculate company_total_stock only for po
-		bin_details = get_bin_details(args.item_code, out.warehouse, company, include_child_warehouses=True)
-
-		out.update(bin_details)
 
 
 def process_args(args):
