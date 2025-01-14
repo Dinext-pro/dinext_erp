@@ -121,7 +121,7 @@ def get_item_details(args, doc=None, for_validate=False, overwrite_warehouse=Tru
 		and (args.get("use_serial_batch_fields") or args.get("doctype") == "POS Invoice")
 	):
 		update_stock(args, out, doc)
-	
+
 	if args.transaction_date and item.lead_time_days:
 		out.schedule_date = out.lead_time_date = add_days(args.transaction_date, item.lead_time_days)
 

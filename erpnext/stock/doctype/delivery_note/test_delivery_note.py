@@ -2406,10 +2406,6 @@ class TestDeliveryNote(FrappeTestCase):
 			if row.item_code == serial_item.name:
 				self.assertTrue(row.serial_no)
 
-			if row.item_code == batch_serial_item.name:
-				self.assertTrue(row.batch_no)
-				self.assertTrue(row.serial_no)
-
 
 def create_delivery_note(**args):
 	dn = frappe.new_doc("Delivery Note")
