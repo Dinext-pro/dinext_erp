@@ -1014,7 +1014,12 @@ class TestWorkOrder(FrappeTestCase):
 			bom.submit()
 
 		wo_order = make_wo_order_test_record(
-			item=item, company=company, planned_start_date=now(), qty=20, skip_transfer=1
+			item=item,
+			company=company,
+			planned_start_date=now(),
+			qty=20,
+			skip_transfer=1,
+			from_wip_warehouse=1,
 		)
 		job_card = frappe.db.get_value("Job Card", {"work_order": wo_order.name}, "name")
 		update_job_card(job_card)
@@ -1026,7 +1031,12 @@ class TestWorkOrder(FrappeTestCase):
 
 		# Partial Job Card 1 with qty 10
 		wo_order = make_wo_order_test_record(
-			item=item, company=company, planned_start_date=add_days(now(), 60), qty=20, skip_transfer=1
+			item=item,
+			company=company,
+			planned_start_date=add_days(now(), 60),
+			qty=20,
+			skip_transfer=1,
+			from_wip_warehouse=1,
 		)
 		job_card = frappe.db.get_value("Job Card", {"work_order": wo_order.name}, "name")
 		update_job_card(job_card, 10, 1)
@@ -2052,6 +2062,7 @@ class TestWorkOrder(FrappeTestCase):
 			bom_no=bom_doc.name,
 			qty=1,
 			skip_transfer=1,
+			from_wip_warehouse=1,
 			source_warehouse="_Test Warehouse - _TC",
 		)
 
