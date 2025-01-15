@@ -272,11 +272,7 @@
  "icon": "fa fa-barcode",
  "idx": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2023-12-17 10:52:55.767839",
-=======
- "modified": "2025-01-15 15:22:49.873889",
->>>>>>> 9607b16dcf (fix: status of the serial no for the raw materials)
+ "modified": "2025-01-15 16:22:49.873889",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Serial No",
