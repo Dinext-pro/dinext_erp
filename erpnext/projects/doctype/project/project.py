@@ -345,7 +345,7 @@ class Project(Document):
 		url = get_link_to_form(self.doctype, self.name, label)
 
 		content = "<p>{}</p>".format(
-			_("You have been invited to collaborate on the project {0}.").format(url)
+			_("You have been invited to collaborate on the project: {0}").format(url)
 		)
 
 		for user in self.users:
