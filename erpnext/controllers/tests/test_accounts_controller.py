@@ -869,9 +869,7 @@ class TestAccountsController(FrappeTestCase):
 		self.assertEqual(pi.items[0].rate, arms_length_price)
 		self.assertEqual(pi.items[0].valuation_rate, 100)
 
-	@IntegrationTestCase.change_settings(
-		"Accounts Settings", {"exchange_gain_loss_posting_date": "Reconciliation Date"}
-	)
+	@change_settings("Accounts Settings", {"exchange_gain_loss_posting_date": "Reconciliation Date"})
 	def test_17_gain_loss_posting_date_for_normal_payment(self):
 		# Sales Invoice in Foreign Currency
 		rate = 80
