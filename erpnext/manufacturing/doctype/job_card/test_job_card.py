@@ -6,7 +6,6 @@ from typing import Literal
 
 import frappe
 from frappe.test_runner import make_test_records
-from frappe.tests import IntegrationTestCase
 from frappe.tests.utils import FrappeTestCase, change_settings
 from frappe.utils import random_string
 from frappe.utils.data import add_to_date, now, today
@@ -425,7 +424,7 @@ class TestJobCard(FrappeTestCase):
 		cost_after_cancel = self.work_order.total_operating_cost
 		self.assertEqual(cost_after_cancel, original_cost)
 
-	@IntegrationTestCase.change_settings(
+	@change_settings(
 		"Manufacturing Settings", {"add_corrective_operation_cost_in_finished_good_valuation": 1}
 	)
 	def test_if_corrective_jc_ops_cost_is_added_to_manufacture_stock_entry(self):
