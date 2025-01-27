@@ -6,6 +6,7 @@ from typing import Literal
 
 import frappe
 from frappe.test_runner import make_test_records
+from frappe.tests import IntegrationTestCase
 from frappe.tests.utils import FrappeTestCase, change_settings
 from frappe.utils import random_string
 from frappe.utils.data import add_to_date, now, today
