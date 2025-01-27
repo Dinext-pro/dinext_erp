@@ -75,11 +75,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2021-05-17 13:57:10.807980",
-=======
  "modified": "2025-01-20 12:22:03.455762",
->>>>>>> 47f8a86003 (fix: logical error in where condition of qb query)
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Landed Cost Taxes and Charges",

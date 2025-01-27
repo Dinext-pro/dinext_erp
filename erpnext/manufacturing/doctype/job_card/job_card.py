@@ -650,15 +650,11 @@ class JobCard(Document):
 					)
 				)
 
-<<<<<<< HEAD
-			if self.get("operation") == d.operation:
-=======
 			if (
 				self.get("operation") == d.operation
 				or self.operation_row_id == d.operation_row_id
 				or self.is_corrective_job_card
 			):
->>>>>>> 2bf10f68a8 (feat: Add corrective job card operating cost as additional costs in stock entry)
 				self.append(
 					"items",
 					{
