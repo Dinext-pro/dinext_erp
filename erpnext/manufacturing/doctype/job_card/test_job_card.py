@@ -451,6 +451,7 @@ class TestJobCard(FrappeTestCase):
 			job_card.name, operation=corrective_action.name, for_operation=job_card.operation
 		)
 		corrective_job_card.hour_rate = 100
+		corrective_job_card.update({"hour_rate": 100})
 		corrective_job_card.insert()
 		corrective_job_card.append(
 			"time_logs",
@@ -460,6 +461,7 @@ class TestJobCard(FrappeTestCase):
 				"completed_qty": 4,
 			},
 		)
+		print(corrective_job_card.as_dict())
 		corrective_job_card.submit()
 		wo.reload()
 
