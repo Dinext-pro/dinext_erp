@@ -451,7 +451,6 @@ class TestJobCard(FrappeTestCase):
 			job_card.name, operation=corrective_action.name, for_operation=job_card.operation
 		)
 		corrective_job_card.hour_rate = 100
-		corrective_job_card.update({"hour_rate": 100})
 		corrective_job_card.insert()
 		corrective_job_card.append(
 			"time_logs",
@@ -461,7 +460,6 @@ class TestJobCard(FrappeTestCase):
 				"completed_qty": 4,
 			},
 		)
-		print(corrective_job_card.as_dict())
 		corrective_job_card.submit()
 		wo.reload()
 
@@ -479,8 +477,10 @@ class TestJobCard(FrappeTestCase):
 			wo.name,
 			[{"name": wo.operations[0].name, "operation": "_Test Operation 1", "qty": 3, "pending_qty": 3}],
 		)
+		workstation = job_card.workstation
 		job_card = frappe.get_last_doc("Job Card", {"work_order": wo.name})
 		job_card.update({"for_quantity": 3})
+		job_card.workstation = workstation
 		job_card.append(
 			"time_logs",
 			{
