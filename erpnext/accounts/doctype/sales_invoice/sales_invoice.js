@@ -65,13 +65,10 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 	refresh(doc, dt, dn) {
 		const me = this;
 		super.refresh();
-<<<<<<< HEAD
-		if (cur_frm.msgbox && cur_frm.msgbox.$wrapper.is(":visible")) {
-=======
+
 		if (this.frm?.msgbox && this.frm.msgbox.$wrapper.is(":visible")) {
->>>>>>> 5643385c22 (fix: attribute 'msgbox' not found in sales invoice.js)
 			// hide new msgbox
-			cur_frm.msgbox.hide();
+			this.frm.msgbox.hide();
 		}
 
 		this.frm.toggle_reqd("due_date", !this.frm.doc.is_return);
