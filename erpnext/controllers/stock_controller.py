@@ -1565,7 +1565,30 @@ def repost_required_for_queue(doc: StockController) -> bool:
 
 
 @frappe.whitelist()
+<<<<<<< HEAD
 def make_quality_inspections(doctype, docname, items):
+=======
+def check_item_quality_inspection(doctype, items):
+	if isinstance(items, str):
+		items = json.loads(items)
+
+	inspection_fieldname_map = {
+		"Purchase Receipt": "inspection_required_before_purchase",
+		"Purchase Invoice": "inspection_required_before_purchase",
+		"Subcontracting Receipt": "inspection_required_before_purchase",
+		"Sales Invoice": "inspection_required_before_delivery",
+		"Delivery Note": "inspection_required_before_delivery",
+	}
+
+	for item in items:
+		if not frappe.db.get_value("Item", item.get("item_code"), inspection_fieldname_map.get(doctype)):
+			items.remove(item)
+	return items
+
+
+@frappe.whitelist()
+def make_quality_inspections(doctype, docname, items, inspection_type):
+>>>>>>> c92ec312b9 (fix: show only items with inspection enabled on create QI dialog)
 	if isinstance(items, str):
 		items = json.loads(items)
 
