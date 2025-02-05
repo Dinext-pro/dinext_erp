@@ -136,11 +136,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2021-01-22 14:10:23.085181",
-=======
  "modified": "2024-08-13 16:21:18.639208",
->>>>>>> d4fdada83c (feat: account heads changed along with journal entry type and descrip… (#42845))
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Value Adjustment",
