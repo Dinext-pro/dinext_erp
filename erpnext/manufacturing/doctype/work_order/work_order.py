@@ -1620,23 +1620,11 @@ def create_job_card(work_order, row, enable_capacity_planning=False, auto_create
 			"project": work_order.project,
 			"company": work_order.company,
 			"sequence_id": row.get("sequence_id"),
-			"wip_warehouse": work_order.wip_warehouse,
-			"hour_rate": row.get("hour_rate"),
-			"serial_no": row.get("serial_no"),
-<<<<<<< HEAD
-=======
-			"time_required": row.get("time_in_mins"),
-			"source_warehouse": row.get("source_warehouse"),
-			"target_warehouse": row.get("fg_warehouse"),
 			"wip_warehouse": work_order.wip_warehouse or row.get("wip_warehouse")
 			if not work_order.skip_transfer or work_order.from_wip_warehouse
 			else work_order.source_warehouse or row.get("source_warehouse"),
-			"skip_material_transfer": row.get("skip_material_transfer"),
-			"backflush_from_wip_warehouse": row.get("backflush_from_wip_warehouse"),
-			"finished_good": row.get("finished_good"),
-			"semi_fg_bom": row.get("bom_no"),
-			"is_subcontracted": row.get("is_subcontracted"),
->>>>>>> 723e902470 (fix: create job card with wip warehouse set to source warehouse if material transfer to wip warehouse is skipped in work order)
+			"hour_rate": row.get("hour_rate"),
+			"serial_no": row.get("serial_no"),
 		}
 	)
 
