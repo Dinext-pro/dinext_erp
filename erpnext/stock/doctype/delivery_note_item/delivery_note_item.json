@@ -934,11 +934,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2024-11-21 17:37:37.441498",
-=======
- "modified": "2025-02-05 14:27:32.322181",
->>>>>>> 417bf49a8d (fix: added correct options for incoming_rate field of delivery note item)
+ "modified": "2025-02-05 14:28:32.322181",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Delivery Note Item",
