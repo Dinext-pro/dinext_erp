@@ -839,14 +839,9 @@ def get_tax_template(doctype, txt, searchfield, start, page_len, filters):
 			"company": company,
 		}
 
-<<<<<<< HEAD
 		taxes = _get_item_tax_template(args, taxes, for_validate=True)
-		return [(d,) for d in set(taxes)]
-=======
-		taxes = _get_item_tax_template(ctx, taxes, for_validate=True)
 		txt = txt.lower()
 		return [(d,) for d in set(taxes) if not txt or txt in d.lower()]
->>>>>>> 4dd37ba033 (fix: filter the item tax template using the input text)
 
 
 def get_fields(doctype, fields=None):
