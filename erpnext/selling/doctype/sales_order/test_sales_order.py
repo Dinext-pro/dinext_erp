@@ -2119,10 +2119,8 @@ class TestSalesOrder(AccountsTestMixin, FrappeTestCase):
 
 		self.assertRaises(frappe.ValidationError, so1.update_status, "Draft")
 
-<<<<<<< HEAD
-=======
-	@IntegrationTestCase.change_settings("Stock Settings", {"enable_stock_reservation": True})
 	def test_warehouse_mapping_based_on_stock_reservation(self):
+		frappe.db.set_single_value("Stock Settings", "enable_stock_reservation", True)
 		self.create_company(company_name="Glass Ceiling", abbr="GC")
 		self.create_item("Lamy Safari 2", True, self.warehouse_stores, self.company, 2000)
 		self.create_customer()
@@ -2235,7 +2233,6 @@ class TestSalesOrder(AccountsTestMixin, FrappeTestCase):
 		sre_doc.reload()
 		self.assertTrue(sre_doc.status == "Delivered")
 
->>>>>>> 0c9d0ea1f4 (fix: stock reservation not working for sales invoice with update stock)
 
 def automatically_fetch_payment_terms(enable=1):
 	accounts_settings = frappe.get_doc("Accounts Settings")
