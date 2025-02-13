@@ -1090,7 +1090,15 @@ class SalesInvoice(SellingController):
 					timesheet.billing_amount = ts_doc.total_billable_amount
 
 	def update_timesheet_billing_for_project(self):
+<<<<<<< HEAD
 		if not self.timesheets and self.project:
+=======
+		if (
+			not self.timesheets
+			and self.project
+			and frappe.db.get_single_value("Projects Settings", "fetch_timesheet_in_sales_invoice")
+		):
+>>>>>>> 914ad357fd (fix(sales invoice): check fetch_timesheet_in_sales_invoice enabled before fetching the timesheet)
 			self.add_timesheet_data()
 		else:
 			self.calculate_billing_amount_for_timesheet()
