@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
  "allow_copy": 0, 
  "allow_guest_to_view": 0, 
  "allow_import": 0, 
@@ -11,6 +12,20 @@
  "document_type": "", 
  "editable_grid": 1, 
  "engine": "InnoDB", 
+=======
+ "actions": [],
+ "creation": "2018-02-21 16:42:13.882879",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "timesheet_sb",
+  "ignore_workstation_time_overlap",
+  "ignore_user_time_overlap",
+  "ignore_employee_time_overlap",
+  "fetch_timesheet_in_sales_invoice"
+ ],
+>>>>>>> 876082ea2f (fix(project settings): add checkbox to auto fetch timesheet in sales invoice)
  "fields": [
   {
    "allow_bulk_edit": 0, 
@@ -108,6 +123,7 @@
    "unique": 0
   }, 
   {
+<<<<<<< HEAD
    "allow_bulk_edit": 0, 
    "allow_on_submit": 0, 
    "bold": 0, 
@@ -156,6 +172,28 @@
  "name": "Projects Settings", 
  "name_case": "", 
  "owner": "Administrator", 
+=======
+   "default": "0",
+   "fieldname": "ignore_employee_time_overlap",
+   "fieldtype": "Check",
+   "label": "Ignore Employee Time Overlap"
+  },
+  {
+   "default": "0",
+   "description": "Enabling the check box will fetch timesheet on select of a Project in Sales Invoice",
+   "fieldname": "fetch_timesheet_in_sales_invoice",
+   "fieldtype": "Check",
+   "label": "Fetch Timesheet in Sales Invoice"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-02-13 23:01:27.321902",
+ "modified_by": "Administrator",
+ "module": "Projects",
+ "name": "Projects Settings",
+ "owner": "Administrator",
+>>>>>>> 876082ea2f (fix(project settings): add checkbox to auto fetch timesheet in sales invoice)
  "permissions": [
   {
    "amend": 0, 
