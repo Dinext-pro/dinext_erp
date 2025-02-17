@@ -53,6 +53,7 @@ class TestTimesheet(unittest.TestCase):
 		self.assertEqual(item.qty, 2.00)
 		self.assertEqual(item.rate, 50.00)
 
+	@IntegrationTestCase.change_settings("Projects Settings", {"fetch_timesheet_in_sales_invoice": 1})
 	def test_timesheet_billing_based_on_project(self):
 		emp = make_employee("test_employee_6@salary.com")
 		project = frappe.get_value("Project", {"project_name": "_Test Project"})
@@ -62,6 +63,10 @@ class TestTimesheet(unittest.TestCase):
 		)
 		sales_invoice = create_sales_invoice(do_not_save=True)
 		sales_invoice.project = project
+<<<<<<< HEAD
+=======
+		sales_invoice.add_timesheet_data()
+>>>>>>> 5880f1d5c6 (fix: enable fetch_timesheet_in_sales_invoice in test)
 		sales_invoice.submit()
 
 		ts = frappe.get_doc("Timesheet", timesheet.name)
