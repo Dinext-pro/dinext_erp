@@ -16,19 +16,7 @@ from erpnext.stock.doctype.serial_and_batch_bundle.serial_and_batch_bundle impor
 from erpnext.stock.doctype.stock_entry.stock_entry_utils import make_stock_entry
 
 
-<<<<<<< HEAD
 class TestSerialandBatchBundle(FrappeTestCase):
-=======
-class UnitTestSerialAndBatchBundle(UnitTestCase):
-	"""
-	Unit tests for SerialAndBatchBundle.
-	Use this class for testing individual functions and methods.
-	"""
-
-	pass
-
-
-class TestSerialandBatchBundle(IntegrationTestCase):
 	def test_naming_for_sabb(self):
 		frappe.db.set_single_value(
 			"Stock Settings", "set_serial_and_batch_bundle_naming_based_on_naming_series", 1
@@ -90,7 +78,6 @@ class TestSerialandBatchBundle(IntegrationTestCase):
 
 		self.assertFalse(bundle_doc.name.startswith("SABB-"))
 
->>>>>>> fe43975cdd (fix: provision to enable naming series for SABB)
 	def test_inward_outward_serial_valuation(self):
 		from erpnext.stock.doctype.delivery_note.test_delivery_note import create_delivery_note
 		from erpnext.stock.doctype.purchase_receipt.test_purchase_receipt import make_purchase_receipt
