@@ -965,11 +965,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2024-11-21 14:21:29.743474",
-=======
  "modified": "2025-02-06 13:29:24.619850",
->>>>>>> 7d47869f4b (fix: add accounting dimensions section in sales order item)
  "modified_by": "Administrator",
  "module": "Selling",
  "name": "Sales Order Item",
