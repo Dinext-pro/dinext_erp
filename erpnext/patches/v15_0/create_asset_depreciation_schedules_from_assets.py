@@ -3,12 +3,6 @@ from frappe.utils import cstr
 
 
 def execute():
-	frappe.reload_doc("assets", "doctype", "Asset Depreciation Schedule")
-	frappe.reload_doc("assets", "doctype", "Asset Finance Book")
-	frappe.reload_doc("assets", "doctype", "Asset")
-
-	assets = get_details_of_draft_or_submitted_depreciable_assets()
-
 	asset_finance_books_map = get_asset_finance_books_map()
 	asset_depreciation_schedules_map = get_asset_depreciation_schedules_map()
 
