@@ -547,43 +547,8 @@
    "fieldname": "purchase_invoice_item",
    "fieldtype": "Data",
    "hidden": 1,
-<<<<<<< HEAD
    "label": "Purchase Invoice Item",
    "options": "Purchase Invoice Item"
-=======
-   "label": "Purchase Invoice Item"
-  },
-  {
-   "fieldname": "insurance_details_tab",
-   "fieldtype": "Tab Break",
-   "label": "Insurance"
-  },
-  {
-   "fieldname": "other_info_tab",
-   "fieldtype": "Tab Break",
-   "label": "Other Info"
-  },
-  {
-   "fieldname": "connections_tab",
-   "fieldtype": "Tab Break",
-   "label": "Connections",
-   "show_dashboard": 1
-  },
-  {
-   "fieldname": "depreciation_tab",
-   "fieldtype": "Tab Break",
-   "label": "Depreciation"
-  },
-  {
-   "fieldname": "accounting_dimensions_section",
-   "fieldtype": "Section Break",
-   "label": "Accounting Dimensions"
-  },
-  {
-   "fieldname": "section_break_jtou",
-   "fieldtype": "Section Break",
-   "label": "Additional Info"
->>>>>>> 8af9dcb33e (fix: make purchase_receipt_item and purchase_invoice_item fields of data type)
   }
  ],
  "idx": 72,
