@@ -1052,11 +1052,15 @@ def get_batch_based_item_price(params, item_code) -> float:
 		item_price = get_item_price(params, item_code, ignore_party=True, force_batch_no=True)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if item_price and item_price[0][2] == params.get("uom"):
 		return item_price[0][1]
 =======
+=======
+	is_free_item = pctx.get('items', [{}])[0].get('is_free_item')
+>>>>>>> 1a56b83054 (fix: Batch Price gets updated only if it is a billed item)
 
-	if item_price and item_price[0].uom == pctx.uom and params.get("is_free_item") == 0:
+	if item_price and item_price[0].uom == pctx.uom and not is_free_item:
 		return item_price[0].price_list_rate
 >>>>>>> 9597b1a69e (fix: Batch Price gets updated only if it is a billed item)
 
