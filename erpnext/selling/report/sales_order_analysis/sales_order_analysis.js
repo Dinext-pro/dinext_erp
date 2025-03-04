@@ -65,9 +65,6 @@ frappe.query_reports["Sales Order Analysis"] = {
 			options: ["To Pay", "To Bill", "To Deliver", "To Deliver and Bill", "Completed", "Closed"],
 			width: "80",
 			get_data: function (txt) {
-<<<<<<< HEAD
-				let status = ["To Bill", "To Deliver", "To Deliver and Bill", "Completed"];
-=======
 				let status = [
 					"To Pay",
 					"To Bill",
@@ -76,7 +73,6 @@ frappe.query_reports["Sales Order Analysis"] = {
 					"Completed",
 					"Closed",
 				];
->>>>>>> 2394e76e7d (fix(report): allow `Closed` sales orders to be visible)
 				let options = [];
 				for (let option of status) {
 					options.push({

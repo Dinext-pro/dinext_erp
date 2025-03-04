@@ -66,9 +66,6 @@ frappe.query_reports["Purchase Order Analysis"] = {
 			width: "80",
 			options: ["To Pay", "To Bill", "To Receive", "To Receive and Bill", "Completed", "Closed"],
 			get_data: function (txt) {
-<<<<<<< HEAD
-				let status = ["To Bill", "To Receive", "To Receive and Bill", "Completed"];
-=======
 				let status = [
 					"To Pay",
 					"To Bill",
@@ -77,7 +74,6 @@ frappe.query_reports["Purchase Order Analysis"] = {
 					"Completed",
 					"Closed",
 				];
->>>>>>> 3b2879d3a1 (fix(report): allow `Closed` purchase orders to be visible)
 				let options = [];
 				for (let option of status) {
 					options.push({
