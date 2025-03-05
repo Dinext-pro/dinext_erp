@@ -440,11 +440,7 @@
  ],
  "is_submittable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2022-11-17 17:23:27.025802",
-=======
  "modified": "2025-02-20 16:55:20.076418",
->>>>>>> 1ec182430d (feat: add total weight in shipment (#46049))
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Shipment",
