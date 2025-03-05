@@ -391,11 +391,7 @@
  "icon": "fa fa-ticket",
  "idx": 7,
  "links": [],
-<<<<<<< HEAD
- "modified": "2021-11-24 13:13:10.276630",
-=======
  "modified": "2025-02-18 21:18:52.797745",
->>>>>>> 019303dd12 (fix: tests)
  "modified_by": "Administrator",
  "module": "Support",
  "name": "Issue",
