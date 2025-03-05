@@ -1127,14 +1127,6 @@
    "no_copy": 1,
    "options": "Company:company:default_currency",
    "print_hide": 1
-<<<<<<< HEAD
-=======
-  },
-  {
-   "fieldname": "distributed_discount_amount",
-   "fieldtype": "Currency",
-   "label": "Distributed Discount Amount",
-   "options": "currency"
   },
   {
    "fieldname": "amount_difference_with_purchase_invoice",
@@ -1143,7 +1135,6 @@
    "no_copy": 1,
    "print_hide": 1,
    "read_only": 1
->>>>>>> 17d415b105 (fix: set landed cost based on purchase invoice rate)
   }
  ],
  "idx": 1,
