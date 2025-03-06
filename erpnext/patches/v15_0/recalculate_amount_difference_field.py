@@ -7,57 +7,9 @@ from erpnext.stock.doctype.purchase_receipt.purchase_receipt import adjust_incom
 
 
 def execute():
-<<<<<<< HEAD
-<<<<<<< HEAD
-	table = frappe.qb.DocType("Purchase Receipt Item")
-	parent = frappe.qb.DocType("Purchase Receipt")
-	query = (
-		frappe.qb.from_(table)
-		.join(parent)
-		.on(table.parent == parent.name)
-		.select(
-			table.parent,
-			table.name,
-			table.amount,
-			table.billed_amt,
-			table.amount_difference_with_purchase_invoice,
-			table.rate,
-			table.qty,
-			parent.conversion_rate,
-		)
-		.where((table.amount_difference_with_purchase_invoice != 0) & (table.docstatus == 1))
-	)
-	try:
-		if fiscal_year_dates := get_fiscal_year(frappe.utils.datetime.date.today()):
-			query.where(parent.posting_date.between(fiscal_year_dates[1], fiscal_year_dates[2]))
-	except Exception:
-		return
-
-	if result := query.run(as_dict=True):
-		item_wise_billed_qty = get_billed_qty_against_purchase_receipt([item.name for item in result])
-
-		purchase_receipts = set()
-		precision = frappe.get_precision("Purchase Receipt Item", "amount")
-		for item in result:
-			adjusted_amt = 0.0
-
-			if (
-				item.billed_amt is not None
-				and item.amount is not None
-				and item_wise_billed_qty.get(item.name)
-			):
-				adjusted_amt = (
-					flt(item.billed_amt / item_wise_billed_qty.get(item.name)) - flt(item.rate)
-				) * item.qty
-			adjusted_amt = flt(
-				adjusted_amt * flt(item.conversion_rate),
-				precision,
-=======
-=======
 	if not frappe.db.get_single_value("Buying Settings", "set_landed_cost_based_on_purchase_invoice_rate"):
 		return
 
->>>>>>> 95d1976931 (fix: check if set_landed_cost_based_on_purchase_invoice_rate is enabled before running patch)
 	for company in frappe.get_all("Company", pluck="name"):
 		table = frappe.qb.DocType("Purchase Receipt Item")
 		parent = frappe.qb.DocType("Purchase Receipt")
@@ -74,7 +26,6 @@ def execute():
 				table.rate,
 				table.qty,
 				parent.conversion_rate,
->>>>>>> 0492b941ff (fix: recalculate_amount_difference_field patch)
 			)
 			.where(
 				(table.amount_difference_with_purchase_invoice != 0)
@@ -111,9 +62,13 @@ def execute():
 		):
 			posting_date = period_closing_voucher[0].period_end_date
 
-		fiscal_year = get_fiscal_year(frappe.utils.datetime.date.today(), raise_on_missing=False)
-		if fiscal_year and getdate(fiscal_year[1]) > getdate(posting_date):
-			posting_date = fiscal_year[1]
+		try:
+			fiscal_year = get_fiscal_year(frappe.utils.datetime.date.today())
+		except Exception:
+			return
+		else:
+			if fiscal_year and getdate(fiscal_year[1]) > getdate(posting_date):
+				posting_date = fiscal_year[1]
 		query = query.where(parent.posting_date > posting_date)
 
 		if result := query.run(as_dict=True):
