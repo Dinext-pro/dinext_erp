@@ -461,7 +461,7 @@ class AccountsController(TransactionBase):
 
 	def validate_party_address(self, party, party_type, billing_address, shipping_address=None):
 		if billing_address or shipping_address:
-			party_address = frappe.get_list(
+			party_address = frappe.get_all(
 				"Dynamic Link",
 				{"link_doctype": party_type, "link_name": party, "parenttype": "Address"},
 				pluck="parent",
@@ -473,7 +473,7 @@ class AccountsController(TransactionBase):
 
 	def validate_party_contact(self, party, party_type):
 		if self.get("contact_person"):
-			contact = frappe.get_list(
+			contact = frappe.get_all(
 				"Dynamic Link",
 				{"link_doctype": party_type, "link_name": party, "parenttype": "Contact"},
 				pluck="parent",
