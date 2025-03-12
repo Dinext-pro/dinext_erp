@@ -1017,8 +1017,7 @@
   {
    "fieldname": "serial_no",
    "fieldtype": "Text",
-   "label": "Serial No",
-   "no_copy": 1
+   "label": "Serial No"
   },
   {
    "fieldname": "rejected_serial_no",
@@ -1141,7 +1140,7 @@
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-03-12 16:34:29.722982",
+ "modified": "2025-03-12 17:10:42.780622",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Purchase Receipt Item",
