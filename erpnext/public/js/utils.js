@@ -701,7 +701,7 @@ erpnext.utils.update_child_items = function (opts) {
 								uom,
 								conversion_factor,
 								item_name,
-								default_bom,
+								bom_no,
 							} = r.message;
 >>>>>>> 508727a57a (fix: fetch bom_no when updating items in sales order)
 
@@ -717,8 +717,12 @@ erpnext.utils.update_child_items = function (opts) {
 <<<<<<< HEAD
 =======
 									item_name: item_name,
+<<<<<<< HEAD
 									bom_no: default_bom,
 >>>>>>> 508727a57a (fix: fetch bom_no when updating items in sales order)
+=======
+									bom_no: bom_no,
+>>>>>>> 386df968c2 (fix: remove duplicate)
 								});
 								dialog.fields_dict.trans_items.grid.refresh();
 							}
