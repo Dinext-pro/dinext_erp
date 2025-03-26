@@ -613,23 +613,14 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2024-02-25 15:58:40.982582",
-=======
- "modified": "2025-03-26 21:00:58.544797",
->>>>>>> 5ddb36af87 (fix: slow query)
+ "modified": "2025-03-26 21:01:58.544797",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",
  "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [],
-<<<<<<< HEAD
  "sort_field": "modified",
-=======
- "row_format": "Dynamic",
- "sort_field": "creation",
->>>>>>> 5ddb36af87 (fix: slow query)
  "sort_order": "ASC",
  "states": []
 }
