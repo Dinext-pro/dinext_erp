@@ -1040,7 +1040,7 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 
 			frappe.msgprint(
 				__(
-					"Please clear the selected {0}",
+					"Please clear the {0}",
 					[frappe.utils.comma_and(to_clear.map(dt => __(dt)))]
 				)
 			);
