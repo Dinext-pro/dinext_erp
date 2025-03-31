@@ -510,11 +510,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2025-02-28 16:08:35.938840",
-=======
  "modified": "2025-03-31 15:34:20.752065",
->>>>>>> b1dfbbe85e (feat: allow UOMs to select for which converstion rate defined in item master)
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Settings",
@@ -535,12 +531,7 @@
   }
  ],
  "quick_entry": 1,
-<<<<<<< HEAD
- "sort_field": "modified",
-=======
- "row_format": "Dynamic",
  "sort_field": "creation",
->>>>>>> b1dfbbe85e (feat: allow UOMs to select for which converstion rate defined in item master)
  "sort_order": "ASC",
  "states": [],
  "track_changes": 1
