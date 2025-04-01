@@ -39,7 +39,7 @@ class PartyLedgerSummaryReport:
 >>>>>>> fca46e0b2d (fix: child values for tree doctypes and query refactor)
 
 		self.validate_filters()
-		self.get_paty_details()
+		self.get_party_details()
 
 		if not self.parties:
 			return [], []
@@ -69,7 +69,7 @@ class PartyLedgerSummaryReport:
 			if self.filters.get(key):
 				self.filters[key] = get_children(doctype, self.filters[key])
 
-	def get_paty_details(self):
+	def get_party_details(self):
 		"""
 		Additional Columns for 'User Permission' based access control
 		"""
