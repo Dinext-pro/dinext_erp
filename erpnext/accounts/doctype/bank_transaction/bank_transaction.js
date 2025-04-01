@@ -10,6 +10,15 @@ frappe.ui.form.on("Bank Transaction", {
 				},
 			};
 		});
+<<<<<<< HEAD
+=======
+
+		frm.set_query("bank_account", function () {
+			return {
+				filters: { is_company_account: 1 },
+			};
+		});
+>>>>>>> 4ae11d4384 (chore: formatting)
 
 		frm.set_query("payment_document", "payment_entries", function () {
 			const payment_doctypes = frm.events.get_payment_doctypes(frm);
