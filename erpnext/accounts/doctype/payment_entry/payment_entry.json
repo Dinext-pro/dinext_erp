@@ -809,11 +809,7 @@
    "table_fieldname": "payment_entries"
   }
  ],
-<<<<<<< HEAD
- "modified": "2025-01-31 17:27:28.555246",
-=======
  "modified": "2025-03-24 16:18:19.920701",
->>>>>>> 8c9d630ee4 (Merge pull request #46683 from Abdeali099/set-employee-contact-details)
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Payment Entry",
