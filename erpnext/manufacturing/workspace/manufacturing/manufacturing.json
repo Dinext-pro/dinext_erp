@@ -336,7 +336,11 @@
    "doc_view": "List",
    "label": "Learn Manufacturing",
    "type": "URL",
+<<<<<<< HEAD
    "url": "https://frappe.school/courses/manufacturing?utm_source=in_app"
+=======
+   "url": "https://school.frappe.io/lms/courses/manufacturing?utm_source=in_app"
+>>>>>>> ef4f662c31 (chore: update links to Frappe School (#46823))
   },
   {
    "color": "Grey",
