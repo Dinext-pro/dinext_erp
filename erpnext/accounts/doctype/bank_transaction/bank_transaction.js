@@ -10,15 +10,12 @@ frappe.ui.form.on("Bank Transaction", {
 				},
 			};
 		});
-<<<<<<< HEAD
-=======
 
 		frm.set_query("bank_account", function () {
 			return {
 				filters: { is_company_account: 1 },
 			};
 		});
->>>>>>> 4ae11d4384 (chore: formatting)
 
 		frm.set_query("payment_document", "payment_entries", function () {
 			const payment_doctypes = frm.events.get_payment_doctypes(frm);
@@ -50,25 +47,6 @@ frappe.ui.form.on("Bank Transaction", {
 		set_bank_statement_filter(frm);
 	},
 
-<<<<<<< HEAD
-	setup: function (frm) {
-		frm.set_query("party_type", function () {
-			return {
-				filters: {
-					name: ["in", Object.keys(frappe.boot.party_account_types)],
-				},
-			};
-		});
-
-		frm.set_query("bank_account", function () {
-			return {
-				filters: { is_company_account: 1 },
-			};
-		});
-	},
-
-=======
->>>>>>> 257802aeda (refactor: move `payment_document` query to `setup`)
 	get_payment_doctypes: function () {
 		// get payment doctypes from all the apps
 		return ["Payment Entry", "Journal Entry", "Sales Invoice", "Purchase Invoice", "Bank Transaction"];
