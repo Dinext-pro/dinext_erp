@@ -40,11 +40,7 @@
 					<p>
 						<a href="/api/method/erpnext.accounts.doctype.payment_request.payment_request.make_payment_request?dn={{ doc.name }}&dt={{ doc.doctype }}&submit_doc=1&order_type=Shopping Cart"
 							class="btn btn-primary btn-sm" id="pay-for-order">
-<<<<<<< HEAD
-							{{ _("Pay", null, "Amount") }} {{doc.get_formatted("grand_total") }}
-=======
-							{{ _("Pay") }} {{ pay_amount }}
->>>>>>> 7efb5a8cb5 (fix(portal): context pay_amount for button)
+							{{ _("Pay", null, "Amount") }} {{ pay_amount }}
 						</a>
 					</p>
 				</div>
