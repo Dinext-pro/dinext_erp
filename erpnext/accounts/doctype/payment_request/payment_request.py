@@ -555,18 +555,6 @@ def make_payment_request(**args):
 		frappe.db.set_value("Sales Order", args.dn, "loyalty_amount", loyalty_amount, update_modified=False)
 		grand_total = grand_total - loyalty_amount
 
-<<<<<<< HEAD
-	bank_account = (
-		get_party_bank_account(args.get("party_type"), args.get("party")) if args.get("party_type") else ""
-	)
-
-	draft_payment_request = frappe.db.get_value(
-		"Payment Request",
-		{"reference_doctype": args.dt, "reference_name": args.dn, "docstatus": 0},
-	)
-
-=======
->>>>>>> 913c60d77b (fix: correct payment request amount)
 	# fetches existing payment request `grand_total` amount
 	existing_payment_request_amount = get_existing_payment_request_amount(ref_doc)
 
