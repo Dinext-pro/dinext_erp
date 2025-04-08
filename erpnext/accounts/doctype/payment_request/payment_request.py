@@ -127,6 +127,8 @@ class PaymentRequest(Document):
 		ref_doc = frappe.get_doc(self.reference_doctype, self.reference_name)
 		if not hasattr(ref_doc, "order_type") or ref_doc.order_type != "Shopping Cart":
 			ref_amount = get_amount(ref_doc, self.payment_account)
+			if not ref_amount:
+				frappe.throw(_("Payment Entry is already created"))
 
 			if existing_payment_request_amount + flt(self.grand_total) > ref_amount:
 				frappe.throw(
@@ -544,6 +546,8 @@ def make_payment_request(**args):
 	gateway_account = get_gateway_details(args) or frappe._dict()
 
 	grand_total = get_amount(ref_doc, gateway_account.get("payment_account"))
+	if not grand_total:
+		frappe.throw(_("Payment Entry is already created"))
 	if args.loyalty_points and args.dt == "Sales Order":
 		from erpnext.accounts.doctype.loyalty_program.loyalty_program import validate_loyalty_points
 
