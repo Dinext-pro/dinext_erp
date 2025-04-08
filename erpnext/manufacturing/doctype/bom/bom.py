@@ -1496,16 +1496,8 @@ def item_query(doctype, txt, searchfield, start, page_len, filters):
 	fields = ["name", "item_name", "item_group", "description"]
 	fields.extend([field for field in searchfields if field not in ["name", "item_group", "description"]])
 
-<<<<<<< HEAD
-	searchfields = searchfields + [
-		field
-		for field in [searchfield or "name", "item_code", "item_group", "item_name"]
-		if field not in searchfields
-	]
-=======
 	if not searchfields:
 		searchfields = ["name"]
->>>>>>> 216bf2456e (fix: removed hardcoded search fields to fix performance issue)
 
 	query_filters = {"disabled": 0, "ifnull(end_of_life, '3099-12-31')": (">", today())}
 
