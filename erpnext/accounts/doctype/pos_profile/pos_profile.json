@@ -56,7 +56,8 @@
   "apply_discount_on",
   "accounting_dimensions_section",
   "cost_center",
-  "dimension_col_break"
+  "dimension_col_break",
+  "project"
  ],
  "fields": [
   {
@@ -389,6 +390,14 @@
    "fieldname": "disable_grand_total_to_default_mop",
    "fieldtype": "Check",
    "label": "Disable auto setting Grand Total to default Payment Mode"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "oldfieldname": "cost_center",
+   "oldfieldtype": "Link",
+   "options": "Project"
   }
  ],
  "icon": "icon-cog",
@@ -416,7 +425,7 @@
    "link_fieldname": "pos_profile"
   }
  ],
- "modified": "2025-01-29 13:12:30.796630",
+ "modified": "2025-04-09 11:35:13.779613",
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "POS Profile",
@@ -442,7 +451,12 @@
    "role": "Accounts User"
   }
  ],
+<<<<<<< HEAD
  "sort_field": "modified",
+=======
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+>>>>>>> 821d64241a (fix: added missing project field on pos profile)
  "sort_order": "DESC",
  "states": []
 }
