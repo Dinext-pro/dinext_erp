@@ -35,7 +35,6 @@
   "show_barcode_field",
   "clean_description_html",
   "allow_internal_transfer_at_arms_length_price",
-<<<<<<< HEAD
   "quality_inspection_settings_section",
   "action_if_quality_inspection_is_not_submitted",
   "column_break_23",
@@ -47,8 +46,6 @@
   "auto_reserve_stock_for_sales_order_on_purchase",
   "serial_and_batch_reservation_section",
   "auto_reserve_serial_and_batch",
-=======
->>>>>>> 8eaa2afeb7 (feat: Allow to Make Quality Inspection after Purchase / Delivery)
   "serial_and_batch_item_settings_tab",
   "section_break_7",
   "allow_existing_serial_no",
