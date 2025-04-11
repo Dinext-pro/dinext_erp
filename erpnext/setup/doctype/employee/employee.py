@@ -85,7 +85,7 @@ class Employee(NestedSet):
 		self.reset_employee_emails_cache()
 
 	def update_user_permissions(self):
-		if not has_permission("User Permission", ptype="write", print_logs=False) or (
+		if not has_permission("User Permission", ptype="write") or (
 			not self.has_value_changed("user_id") and not self.has_value_changed("create_user_permission")
 		):
 			return
