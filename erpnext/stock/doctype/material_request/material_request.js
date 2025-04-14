@@ -107,6 +107,7 @@ frappe.ui.form.on("Material Request", {
 
 			if (flt(frm.doc.per_received, precision) < 100) {
 				frm.add_custom_button(__("Stop"), () => frm.events.update_status(frm, "Stopped"));
+<<<<<<< HEAD
 
 				if (frm.doc.material_request_type === "Purchase") {
 					frm.add_custom_button(
@@ -115,6 +116,8 @@ frappe.ui.form.on("Material Request", {
 						__("Create")
 					);
 				}
+=======
+>>>>>>> 5a524854de (fix: consider per_ordered instead of per_billed when creating PO from MR)
 			}
 
 			if (flt(frm.doc.per_ordered, precision) < 100) {
@@ -159,13 +162,17 @@ frappe.ui.form.on("Material Request", {
 
 				if (frm.doc.material_request_type === "Purchase") {
 					frm.add_custom_button(
+						__("Purchase Order"),
+						() => frm.events.make_purchase_order(frm),
+						__("Create")
+					);
+
+					frm.add_custom_button(
 						__("Request for Quotation"),
 						() => frm.events.make_request_for_quotation(frm),
 						__("Create")
 					);
-				}
 
-				if (frm.doc.material_request_type === "Purchase") {
 					frm.add_custom_button(
 						__("Supplier Quotation"),
 						() => frm.events.make_supplier_quotation(frm),
@@ -177,6 +184,14 @@ frappe.ui.form.on("Material Request", {
 					frm.add_custom_button(
 						__("Work Order"),
 						() => frm.events.raise_work_orders(frm),
+						__("Create")
+					);
+				}
+
+				if (frm.doc.material_request_type === "Subcontracting") {
+					frm.add_custom_button(
+						__("Subcontracted Purchase Order"),
+						() => frm.events.make_purchase_order(frm),
 						__("Create")
 					);
 				}
