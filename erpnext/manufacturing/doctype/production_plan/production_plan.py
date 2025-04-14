@@ -22,6 +22,7 @@ from frappe.utils import (
 )
 from frappe.utils.csvutils import build_csv_response
 from pypika.terms import ExistsCriterion
+from collections import defaultdict
 
 from erpnext.manufacturing.doctype.bom.bom import get_children as get_bom_children
 from erpnext.manufacturing.doctype.bom.bom import validate_bom_no
