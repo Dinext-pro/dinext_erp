@@ -23,6 +23,7 @@ class ProcessPaymentReconciliation(Document):
 		bank_cash_account: DF.Link | None
 		company: DF.Link
 		cost_center: DF.Link | None
+		default_advance_account: DF.Link
 		error_log: DF.LongText | None
 		from_invoice_date: DF.Date | None
 		from_payment_date: DF.Date | None
@@ -101,6 +102,7 @@ def get_pr_instance(doc: str):
 		"party_type",
 		"party",
 		"receivable_payable_account",
+		"default_advance_account",
 		"from_invoice_date",
 		"to_invoice_date",
 		"from_payment_date",
@@ -208,9 +210,9 @@ def trigger_reconciliation_for_queued_docs():
 
 		docs_to_trigger = []
 		unique_filters = set()
-		queue_size = 5
+		queue_size = frappe.db.get_single_value("Accounts Settings", "reconciliation_queue_size") or 5
 
-		fields = ["company", "party_type", "party", "receivable_payable_account"]
+		fields = ["company", "party_type", "party", "receivable_payable_account", "default_advance_account"]
 
 		def get_filters_as_tuple(fields, doc):
 			filters = ()

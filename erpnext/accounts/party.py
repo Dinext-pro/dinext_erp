@@ -29,6 +29,12 @@ from erpnext.accounts.utils import get_fiscal_year
 from erpnext.exceptions import InvalidAccountCurrency, PartyDisabled, PartyFrozen
 from erpnext.utilities.regional import temporary_flag
 
+try:
+	from frappe.contacts.doctype.address.address import render_address as _render_address
+except ImportError:
+	# Older frappe versions where this function is not available
+	from frappe.contacts.doctype.address.address import get_address_display as _render_address
+
 PURCHASE_TRANSACTION_TYPES = {
 	"Supplier Quotation",
 	"Purchase Order",
@@ -68,7 +74,7 @@ def get_party_details(
 	pos_profile=None,
 ):
 	if not party:
-		return {}
+		return frappe._dict()
 	if not frappe.db.exists(party_type, party):
 		frappe.throw(_("{0}: {1} does not exists").format(party_type, party))
 	return _get_party_details(
@@ -273,35 +279,56 @@ def get_regional_address_details(party_details, doctype, company):
 	pass
 
 
-def set_contact_details(party_details, party, party_type):
-	party_details.contact_person = get_default_contact(party_type, party.name)
+def complete_contact_details(party_details):
+	contact_details = frappe._dict()
 
-	if not party_details.contact_person:
-		party_details.update(
-			{
-				"contact_person": None,
-				"contact_display": None,
-				"contact_email": None,
-				"contact_mobile": None,
-				"contact_phone": None,
-				"contact_designation": None,
-				"contact_department": None,
-			}
+	if party_details.party_type == "Employee":
+		contact_details = frappe.db.get_value(
+			"Employee",
+			party_details.party,
+			[
+				"employee_name as contact_display",
+				"prefered_email as contact_email",
+				"cell_number as contact_mobile",
+				"designation as contact_designation",
+				"department as contact_department",
+			],
+			as_dict=True,
+		)
+
+		contact_details.update({"contact_person": None, "contact_phone": None})
+	elif party_details.contact_person:
+		contact_details = frappe.db.get_value(
+			"Contact",
+			party_details.contact_person,
+			[
+				"name as contact_person",
+				"full_name as contact_display",
+				"email_id as contact_email",
+				"mobile_no as contact_mobile",
+				"phone as contact_phone",
+				"designation as contact_designation",
+				"department as contact_department",
+			],
+			as_dict=True,
 		)
 	else:
-		fields = [
-			"name as contact_person",
-			"full_name as contact_display",
-			"email_id as contact_email",
-			"mobile_no as contact_mobile",
-			"phone as contact_phone",
-			"designation as contact_designation",
-			"department as contact_department",
-		]
+		contact_details = {
+			"contact_person": None,
+			"contact_display": None,
+			"contact_email": None,
+			"contact_mobile": None,
+			"contact_phone": None,
+			"contact_designation": None,
+			"contact_department": None,
+		}
 
-		contact_details = frappe.db.get_value("Contact", party_details.contact_person, fields, as_dict=True)
+	party_details.update(contact_details)
 
-		party_details.update(contact_details)
+
+def set_contact_details(party_details, party, party_type):
+	party_details.contact_person = get_default_contact(party_type, party.name)
+	complete_contact_details(party_details)
 
 
 def set_other_values(party_details, party, party_type):
@@ -566,12 +593,13 @@ def validate_party_accounts(doc):
 
 
 @frappe.whitelist()
-def get_due_date(posting_date, party_type, party, company=None, bill_date=None):
+def get_due_date(posting_date, party_type, party, company=None, bill_date=None, template_name=None):
 	"""Get due date from `Payment Terms Template`"""
 	due_date = None
 	if (bill_date or posting_date) and party:
 		due_date = bill_date or posting_date
-		template_name = get_payment_terms_template(party, party_type, company)
+		if not template_name:
+			template_name = get_payment_terms_template(party, party_type, company)
 
 		if template_name:
 			due_date = get_due_date_from_template(template_name, posting_date, bill_date).strftime("%Y-%m-%d")
@@ -670,7 +698,7 @@ def set_taxes(
 ):
 	from erpnext.accounts.doctype.tax_rule.tax_rule import get_party_details, get_tax_template
 
-	args = {party_type.lower(): party, "company": company}
+	args = {frappe.scrub(party_type): party, "company": company}
 
 	if tax_category:
 		args["tax_category"] = tax_category
@@ -690,10 +718,10 @@ def set_taxes(
 	else:
 		args.update(get_party_details(party, party_type))
 
-	if party_type in ("Customer", "Lead", "Prospect"):
+	if party_type in ("Customer", "Lead", "Prospect", "CRM Deal"):
 		args.update({"tax_type": "Sales"})
 
-		if party_type in ["Lead", "Prospect"]:
+		if party_type in ["Lead", "Prospect", "CRM Deal"]:
 			args["customer"] = None
 			del args[frappe.scrub(party_type)]
 	else:
@@ -751,6 +779,20 @@ def validate_party_frozen_disabled(party_type, party_name):
 		elif party_type == "Employee":
 			if frappe.db.get_value("Employee", party_name, "status") != "Active":
 				frappe.msgprint(_("{0} {1} is not active").format(party_type, party_name), alert=True)
+
+
+def validate_account_party_type(self):
+	if self.is_cancelled:
+		return
+
+	if self.party_type and self.party:
+		account_type = frappe.get_cached_value("Account", self.account, "account_type")
+		if account_type and (account_type not in ["Receivable", "Payable", "Equity"]):
+			frappe.throw(
+				_("Party Type and Party can only be set for Receivable / Payable account<br><br>{0}").format(
+					self.account
+				)
+			)
 
 
 def get_dashboard_info(party_type, party, loyalty_program=None):
@@ -881,16 +923,17 @@ def get_party_shipping_address(doctype: str, name: str) -> str | None:
 def get_partywise_advanced_payment_amount(
 	party_type, posting_date=None, future_payment=0, company=None, party=None
 ):
+	account_type = frappe.get_cached_value("Party Type", party_type, "account_type")
+
 	ple = frappe.qb.DocType("Payment Ledger Entry")
+	acc = frappe.qb.DocType("Account")
+
 	query = (
 		frappe.qb.from_(ple)
-		.select(ple.party, Abs(Sum(ple.amount).as_("amount")))
-		.where(
-			(ple.party_type.isin(party_type))
-			& (ple.amount < 0)
-			& (ple.against_voucher_no == ple.voucher_no)
-			& (ple.delinked == 0)
-		)
+		.inner_join(acc)
+		.on(ple.account == acc.name)
+		.select(ple.party)
+		.where((ple.party_type.isin(party_type)) & (acc.account_type == account_type) & (ple.delinked == 0))
 		.groupby(ple.party)
 	)
 
@@ -909,9 +952,32 @@ def get_partywise_advanced_payment_amount(
 	if invoice_doctypes := frappe.get_hooks("invoice_doctypes"):
 		query = query.where(ple.voucher_type.notin(invoice_doctypes))
 
-	data = query.run()
-	if data:
-		return frappe._dict(data)
+	# Get advance amount from Receivable / Payable Account
+	party_ledger = query.select(Abs(Sum(ple.amount).as_("amount")))
+	party_ledger = party_ledger.where(ple.amount < 0)
+	party_ledger = party_ledger.where(ple.against_voucher_no == ple.voucher_no)
+	party_ledger = party_ledger.where(
+		acc.root_type == ("Liability" if account_type == "Payable" else "Asset")
+	)
+
+	data = party_ledger.run()
+	data = frappe._dict(data or {})
+
+	# Get advance amount from Advance Account
+	advance_ledger = query.select(Sum(ple.amount).as_("amount"), ple.account)
+	advance_ledger = advance_ledger.where(
+		acc.root_type == ("Asset" if account_type == "Payable" else "Liability")
+	)
+	advance_ledger = advance_ledger.groupby(ple.account)
+	advance_ledger = advance_ledger.having(Sum(ple.amount) < 0)
+
+	advance_data = advance_ledger.run()
+
+	for row in advance_data:
+		data.setdefault(row[0], 0)
+		data[row[0]] += abs(row[1])
+
+	return data
 
 
 def get_default_contact(doctype: str, name: str) -> str | None:
@@ -958,10 +1024,4 @@ def add_party_account(party_type, party, company, account):
 
 
 def render_address(address, check_permissions=True):
-	try:
-		from frappe.contacts.doctype.address.address import render_address as _render
-	except ImportError:
-		# Older frappe versions where this function is not available
-		from frappe.contacts.doctype.address.address import get_address_display as _render
-
-	return frappe.call(_render, address, check_permissions=check_permissions)
+	return frappe.call(_render_address, address, check_permissions=check_permissions)

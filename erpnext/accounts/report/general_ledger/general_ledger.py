@@ -208,6 +208,10 @@ def get_gl_entries(filters, accounting_dimensions):
 def get_conditions(filters):
 	conditions = []
 
+	ignore_is_opening = frappe.db.get_single_value(
+		"Accounts Settings", "ignore_is_opening_check_for_reporting"
+	)
+
 	if filters.get("account"):
 		filters.account = get_accounts_with_children(filters.account)
 		if filters.account:
@@ -270,9 +274,15 @@ def get_conditions(filters):
 		or filters.get("party")
 		or filters.get("group_by") in ["Group by Account", "Group by Party"]
 	):
-		conditions.append("(posting_date >=%(from_date)s or is_opening = 'Yes')")
+		if not ignore_is_opening:
+			conditions.append("(posting_date >=%(from_date)s or is_opening = 'Yes')")
+		else:
+			conditions.append("posting_date >=%(from_date)s")
 
-	conditions.append("(posting_date <=%(to_date)s or is_opening = 'Yes')")
+	if not ignore_is_opening:
+		conditions.append("(posting_date <=%(to_date)s or is_opening = 'Yes')")
+	else:
+		conditions.append("posting_date <=%(to_date)s")
 
 	if filters.get("project"):
 		conditions.append("project in %(project)s")
@@ -345,9 +355,17 @@ def get_accounts_with_children(accounts):
 	return frappe.qb.from_(doctype).select(doctype.name).where(Criterion.any(conditions)).run(pluck=True)
 
 
+def set_bill_no(gl_entries):
+	inv_details = get_supplier_invoice_details()
+	for gl in gl_entries:
+		gl["bill_no"] = inv_details.get(gl.get("against_voucher"), "")
+
+
 def get_data_with_opening_closing(filters, account_details, accounting_dimensions, gl_entries):
 	data = []
 	totals_dict = get_totals_dict()
+
+	set_bill_no(gl_entries)
 
 	gle_map = initialize_gle_map(gl_entries, filters, totals_dict)
 
@@ -362,16 +380,21 @@ def get_data_with_opening_closing(filters, account_details, accounting_dimension
 			if acc_dict.entries:
 				# opening
 				data.append({"debit_in_transaction_currency": None, "credit_in_transaction_currency": None})
-				if filters.get("group_by") != "Group by Voucher":
+				if (not filters.get("group_by") and not filters.get("voucher_no")) or (
+					filters.get("group_by") and filters.get("group_by") != "Group by Voucher"
+				):
 					data.append(acc_dict.totals.opening)
 
 				data += acc_dict.entries
 
 				# totals
-				data.append(acc_dict.totals.total)
+				if filters.get("group_by") or not filters.voucher_no:
+					data.append(acc_dict.totals.total)
 
 				# closing
-				if filters.get("group_by") != "Group by Voucher":
+				if (not filters.get("group_by") and not filters.get("voucher_no")) or (
+					filters.get("group_by") and filters.get("group_by") != "Group by Voucher"
+				):
 					data.append(acc_dict.totals.closing)
 
 		data.append({"debit_in_transaction_currency": None, "credit_in_transaction_currency": None})
@@ -511,6 +534,7 @@ def get_accountwise_gle(filters, accounting_dimensions, gl_entries, gle_map, tot
 					for dim in accounting_dimensions:
 						keylist.append(gle.get(dim))
 					keylist.append(gle.get("cost_center"))
+					keylist.append(gle.get("project"))
 
 				key = tuple(keylist)
 				if key not in consolidated_gle:
@@ -536,7 +560,6 @@ def get_account_type_map(company):
 
 def get_result_as_list(data, filters):
 	balance, _balance_in_account_currency = 0, 0
-	inv_details = get_supplier_invoice_details()
 
 	for d in data:
 		if not d.get("posting_date"):
@@ -546,7 +569,6 @@ def get_result_as_list(data, filters):
 		d["balance"] = balance
 
 		d["account_currency"] = filters.account_currency
-		d["bill_no"] = inv_details.get(d.get("against_voucher"), "")
 
 	return data
 
@@ -658,10 +680,11 @@ def get_columns(filters):
 		{"label": _("Against Account"), "fieldname": "against", "width": 120},
 		{"label": _("Party Type"), "fieldname": "party_type", "width": 100},
 		{"label": _("Party"), "fieldname": "party", "width": 100},
-		{"label": _("Project"), "options": "Project", "fieldname": "project", "width": 100},
 	]
 
 	if filters.get("include_dimensions"):
+		columns.append({"label": _("Project"), "options": "Project", "fieldname": "project", "width": 100})
+
 		for dim in get_accounting_dimensions(as_list=False):
 			columns.append(
 				{"label": _(dim.label), "options": dim.label, "fieldname": dim.fieldname, "width": 100}

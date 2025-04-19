@@ -1,10 +1,14 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import inspect
+
 import frappe
 from frappe import _, qb
 from frappe.model.document import Document
 from frappe.utils.data import comma_and
+
+from erpnext.stock import get_warehouse_account_map
 
 
 class RepostAccountingLedger(Document):
@@ -45,9 +49,9 @@ class RepostAccountingLedger(Document):
 			latest_pcv = (
 				frappe.db.get_all(
 					"Period Closing Voucher",
-					filters={"company": self.company},
-					order_by="posting_date desc",
-					pluck="posting_date",
+					filters={"company": self.company, "docstatus": 1},
+					order_by="period_end_date desc",
+					pluck="period_end_date",
 					limit=1,
 				)
 				or None
@@ -95,6 +99,9 @@ class RepostAccountingLedger(Document):
 			doc = frappe.get_doc(x.voucher_type, x.voucher_no)
 			if doc.doctype in ["Payment Entry", "Journal Entry"]:
 				gle_map = doc.build_gl_map()
+			elif doc.doctype == "Purchase Receipt":
+				warehouse_account_map = get_warehouse_account_map(doc.company)
+				gle_map = doc.get_gl_entries(warehouse_account_map)
 			else:
 				gle_map = doc.get_gl_entries()
 
@@ -142,6 +149,8 @@ class RepostAccountingLedger(Document):
 
 @frappe.whitelist()
 def start_repost(account_repost_doc=str) -> None:
+	from erpnext.accounts.general_ledger import make_reverse_gl_entries
+
 	frappe.flags.through_repost_accounting_ledger = True
 	if account_repost_doc:
 		repost_doc = frappe.get_doc("Repost Accounting Ledger", account_repost_doc)
@@ -173,10 +182,26 @@ def start_repost(account_repost_doc=str) -> None:
 						doc.force_set_against_expense_account()
 					doc.make_gl_entries()
 
+				elif doc.doctype == "Purchase Receipt":
+					if not repost_doc.delete_cancelled_entries:
+						doc.docstatus = 2
+						doc.make_gl_entries_on_cancel()
+
+					doc.docstatus = 1
+					doc.make_gl_entries(from_repost=True)
+
 				elif doc.doctype in ["Payment Entry", "Journal Entry", "Expense Claim"]:
 					if not repost_doc.delete_cancelled_entries:
 						doc.make_gl_entries(1)
 					doc.make_gl_entries()
+				elif doc.doctype in frappe.get_hooks("repost_allowed_doctypes"):
+					if hasattr(doc, "make_gl_entries") and callable(doc.make_gl_entries):
+						if not repost_doc.delete_cancelled_entries:
+							if "cancel" in inspect.getfullargspec(doc.make_gl_entries):
+								doc.make_gl_entries(cancel=1)
+							else:
+								make_reverse_gl_entries(voucher_type=doc.doctype, voucher_no=doc.name)
+						doc.make_gl_entries()
 
 
 def get_allowed_types_from_settings():

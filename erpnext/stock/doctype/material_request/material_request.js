@@ -155,17 +155,13 @@ frappe.ui.form.on("Material Request", {
 						() => frm.events.make_purchase_order(frm),
 						__("Create")
 					);
-				}
 
-				if (frm.doc.material_request_type === "Purchase") {
 					frm.add_custom_button(
 						__("Request for Quotation"),
 						() => frm.events.make_request_for_quotation(frm),
 						__("Create")
 					);
-				}
 
-				if (frm.doc.material_request_type === "Purchase") {
 					frm.add_custom_button(
 						__("Supplier Quotation"),
 						() => frm.events.make_supplier_quotation(frm),
@@ -177,6 +173,14 @@ frappe.ui.form.on("Material Request", {
 					frm.add_custom_button(
 						__("Work Order"),
 						() => frm.events.raise_work_orders(frm),
+						__("Create")
+					);
+				}
+
+				if (frm.doc.material_request_type === "Subcontracting") {
+					frm.add_custom_button(
+						__("Subcontracted Purchase Order"),
+						() => frm.events.make_purchase_order(frm),
 						__("Create")
 					);
 				}
@@ -259,17 +263,20 @@ frappe.ui.form.on("Material Request", {
 			},
 			callback: function (r) {
 				const d = item;
-				const allow_to_change_fields = [
+				let allow_to_change_fields = [
 					"actual_qty",
 					"projected_qty",
 					"min_order_qty",
 					"item_name",
-					"description",
 					"stock_uom",
 					"uom",
 					"conversion_factor",
 					"stock_qty",
 				];
+
+				if (overwrite_warehouse) {
+					allow_to_change_fields.push("description");
+				}
 
 				if (!r.exc) {
 					$.each(r.message, function (key, value) {
@@ -319,7 +326,7 @@ frappe.ui.form.on("Material Request", {
 					default: 1,
 				},
 			],
-			primary_action_label: "Get Items",
+			primary_action_label: __("Get Items"),
 			primary_action(values) {
 				if (!values) return;
 				values["company"] = frm.doc.company;

@@ -41,8 +41,14 @@ frappe.query_reports["Stock Balance"] = {
 			width: "80",
 			options: "Item",
 			get_query: function () {
+				let item_group = frappe.query_report.get_filter_value("item_group");
+
 				return {
 					query: "erpnext.controllers.queries.item_query",
+					filters: {
+						...(item_group && { item_group }),
+						is_stock_item: 1,
+					},
 				};
 			},
 		},
@@ -104,6 +110,12 @@ frappe.query_reports["Stock Balance"] = {
 		{
 			fieldname: "include_zero_stock_items",
 			label: __("Include Zero Stock Items"),
+			fieldtype: "Check",
+			default: 0,
+		},
+		{
+			fieldname: "show_dimension_wise_stock",
+			label: __("Show Dimension Wise Stock"),
 			fieldtype: "Check",
 			default: 0,
 		},

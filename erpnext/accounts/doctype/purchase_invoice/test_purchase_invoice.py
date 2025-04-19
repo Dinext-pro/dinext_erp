@@ -372,6 +372,53 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 
 		self.assertEqual(discrepancy_caused_by_exchange_rate_diff, amount)
 
+	def test_purchase_invoice_with_exchange_rate_difference_for_non_stock_item(self):
+		from erpnext.stock.doctype.purchase_receipt.purchase_receipt import (
+			make_purchase_invoice as create_purchase_invoice,
+		)
+
+		# Creating Purchase Invoice with USD currency
+		pr = frappe.new_doc("Purchase Receipt")
+		pr.currency = "USD"
+		pr.company = "_Test Company with perpetual inventory"
+		pr.conversion_rate = (70,)
+		pr.supplier = "_Test Supplier USD"
+		pr.append(
+			"items",
+			{
+				"item_code": "_Test Non Stock Item",
+				"qty": 1,
+				"rate": 100,
+			},
+		)
+		pr.append(
+			"items",
+			{"item_code": "_Test Item", "qty": 1, "rate": 5, "warehouse": "Stores - TCP1"},
+		)
+		pr.insert()
+		pr.submit()
+
+		# Createing purchase invoice against Purchase Receipt
+		pi = create_purchase_invoice(pr.name)
+		pi.conversion_rate = 80
+		pi.credit_to = "_Test Payable USD - TCP1"
+		pi.insert()
+		pi.submit()
+
+		# Get exchnage gain and loss account
+		exchange_gain_loss_account = frappe.db.get_value("Company", pi.company, "exchange_gain_loss_account")
+
+		# fetching the latest GL Entry with exchange gain and loss account account
+		amount = frappe.db.get_value(
+			"GL Entry", {"account": exchange_gain_loss_account, "voucher_no": pi.name}, "debit"
+		)
+
+		discrepancy_caused_by_exchange_rate_diff = abs(
+			pi.items[1].base_net_amount - pr.items[1].base_net_amount
+		)
+
+		self.assertEqual(discrepancy_caused_by_exchange_rate_diff, amount)
+
 	def test_purchase_invoice_change_naming_series(self):
 		pi = frappe.copy_doc(test_records[1])
 		pi.insert()
@@ -1544,6 +1591,61 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 		payment_entry.load_from_db()
 		self.assertEqual(payment_entry.taxes[0].allocated_amount, 0)
 
+	def test_purchase_gl_with_tax_withholding_tax(self):
+		company = "_Test Company"
+
+		tds_account_args = {
+			"doctype": "Account",
+			"account_name": "TDS Payable",
+			"account_type": "Tax",
+			"parent_account": frappe.db.get_value(
+				"Account", {"account_name": "Duties and Taxes", "company": company}
+			),
+			"company": company,
+		}
+
+		tds_account = create_account(**tds_account_args)
+		tax_withholding_category = "Test TDS - 194 - Dividends - Individual"
+
+		# Update tax withholding category with current fiscal year and rate details
+		create_tax_witholding_category(tax_withholding_category, company, tds_account)
+
+		# create a new supplier to test
+		supplier = create_supplier(
+			supplier_name="_Test TDS Advance Supplier",
+			tax_withholding_category=tax_withholding_category,
+		)
+
+		pi = make_purchase_invoice(
+			supplier=supplier.name,
+			rate=3000,
+			qty=1,
+			item="_Test Non Stock Item",
+			do_not_submit=1,
+		)
+		pi.apply_tds = 1
+		pi.tax_withholding_category = tax_withholding_category
+		pi.save()
+		pi.submit()
+
+		self.assertEqual(pi.taxes[0].tax_amount, 300)
+		self.assertEqual(pi.taxes[0].account_head, tds_account)
+
+		gl_entries = frappe.get_all(
+			"GL Entry",
+			filters={"voucher_no": pi.name, "voucher_type": "Purchase Invoice", "account": "Creditors - _TC"},
+			fields=["account", "against", "debit", "credit"],
+		)
+
+		for gle in gl_entries:
+			if gle.debit:
+				# GL Entry with TDS Amount
+				self.assertEqual(gle.against, tds_account)
+				self.assertEqual(gle.debit, 300)
+			else:
+				# GL Entry with Purchase Invoice Amount
+				self.assertEqual(gle.credit, 3000)
+
 	def test_provisional_accounting_entry(self):
 		setup_provisional_accounting()
 
@@ -1680,6 +1782,30 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 
 		frappe.db.set_single_value("Buying Settings", "set_landed_cost_based_on_purchase_invoice_rate", 1)
 
+		# Cost of Item is zero in Purchase Receipt
+		pr = make_purchase_receipt(qty=1, rate=0)
+
+		stock_value_difference = frappe.db.get_value(
+			"Stock Ledger Entry",
+			{"voucher_type": "Purchase Receipt", "voucher_no": pr.name},
+			"stock_value_difference",
+		)
+		self.assertEqual(stock_value_difference, 0)
+
+		pi = create_purchase_invoice_from_receipt(pr.name)
+		for row in pi.items:
+			row.rate = 150
+
+		pi.save()
+		pi.submit()
+
+		stock_value_difference = frappe.db.get_value(
+			"Stock Ledger Entry",
+			{"voucher_type": "Purchase Receipt", "voucher_no": pr.name},
+			"stock_value_difference",
+		)
+		self.assertEqual(stock_value_difference, 150)
+
 		# Increase the cost of the item
 
 		pr = make_purchase_receipt(qty=1, rate=100)
@@ -1756,6 +1882,52 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 			"stock_value_difference",
 		)
 		self.assertEqual(stock_value_difference, 100)
+
+		frappe.db.set_single_value("Buying Settings", "maintain_same_rate", 1)
+
+	def test_adjust_incoming_rate_for_rejected_item(self):
+		frappe.db.set_single_value("Buying Settings", "maintain_same_rate", 0)
+
+		frappe.db.set_single_value("Buying Settings", "set_landed_cost_based_on_purchase_invoice_rate", 1)
+
+		# Cost of Item is zero in Purchase Receipt
+		pr = make_purchase_receipt(qty=1, rejected_qty=1, rate=0)
+
+		stock_value_difference = frappe.db.get_value(
+			"Stock Ledger Entry",
+			{"voucher_type": "Purchase Receipt", "voucher_no": pr.name},
+			"stock_value_difference",
+		)
+		self.assertEqual(stock_value_difference, 0)
+
+		pi = create_purchase_invoice_from_receipt(pr.name)
+		for row in pi.items:
+			row.qty = 1
+			row.rate = 150
+
+		pi.save()
+		pi.submit()
+
+		stock_value_difference = frappe.db.get_value(
+			"Stock Ledger Entry",
+			{"voucher_type": "Purchase Receipt", "voucher_no": pr.name, "warehouse": pi.items[0].warehouse},
+			"stock_value_difference",
+		)
+		self.assertEqual(stock_value_difference, 150)
+
+		stock_value_difference = frappe.db.get_value(
+			"Stock Ledger Entry",
+			{
+				"voucher_type": "Purchase Receipt",
+				"voucher_no": pr.name,
+				"warehouse": pi.items[0].rejected_warehouse,
+			},
+			"stock_value_difference",
+		)
+
+		self.assertFalse(stock_value_difference)
+
+		frappe.db.set_single_value("Buying Settings", "set_landed_cost_based_on_purchase_invoice_rate", 0)
 
 		frappe.db.set_single_value("Buying Settings", "maintain_same_rate", 1)
 
@@ -1922,7 +2094,7 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 			1,
 		)
 		pi = make_pi_from_pr(pr.name)
-		self.assertEqual(pi.payment_schedule[0].payment_amount, 2500)
+		self.assertEqual(pi.payment_schedule[0].payment_amount, 1000)
 
 		automatically_fetch_payment_terms(enable=0)
 		frappe.db.set_value(
@@ -2291,6 +2463,297 @@ class TestPurchaseInvoice(FrappeTestCase, StockTestMixin):
 		frappe.db.set_single_value("Buying Settings", "set_landed_cost_based_on_purchase_invoice_rate", 0)
 
 		frappe.db.set_single_value("Buying Settings", "maintain_same_rate", 1)
+
+	def test_last_purchase_rate(self):
+		item = create_item("_Test Item For Last Purchase Rate from PI", is_stock_item=1)
+		pi1 = make_purchase_invoice(item_code=item.item_code, qty=10, rate=100)
+		item.reload()
+		self.assertEqual(item.last_purchase_rate, 100)
+
+		pi2 = make_purchase_invoice(item_code=item.item_code, qty=10, rate=200)
+		item.reload()
+		self.assertEqual(item.last_purchase_rate, 200)
+
+		pi2.cancel()
+		item.reload()
+		self.assertEqual(item.last_purchase_rate, 100)
+
+		pi1.cancel()
+		item.reload()
+		self.assertEqual(item.last_purchase_rate, 0)
+
+	def test_adjust_incoming_rate_from_pi_with_multi_currency_and_partial_billing(self):
+		frappe.db.set_single_value("Buying Settings", "maintain_same_rate", 0)
+
+		frappe.db.set_single_value("Buying Settings", "set_landed_cost_based_on_purchase_invoice_rate", 1)
+
+		pr = make_purchase_receipt(
+			qty=10, rate=10, currency="USD", do_not_save=1, supplier="_Test Supplier USD"
+		)
+		pr.conversion_rate = 5300
+		pr.save()
+		pr.submit()
+
+		incoming_rate = frappe.db.get_value(
+			"Stock Ledger Entry",
+			{"voucher_type": "Purchase Receipt", "voucher_no": pr.name},
+			"incoming_rate",
+		)
+		self.assertEqual(incoming_rate, 53000)  # Asserting to confirm if the default calculation is correct
+
+		pi = create_purchase_invoice_from_receipt(pr.name)
+		for row in pi.items:
+			row.qty = 1
+
+		pi.save()
+		pi.submit()
+
+		incoming_rate = frappe.db.get_value(
+			"Stock Ledger Entry",
+			{"voucher_type": "Purchase Receipt", "voucher_no": pr.name},
+			"incoming_rate",
+		)
+		# Test 1 : Incoming rate should not change as only the qty has changed and not the rate (this was not the case before)
+		self.assertEqual(incoming_rate, 53000)
+
+		pi = create_purchase_invoice_from_receipt(pr.name)
+		for row in pi.items:
+			row.qty = 1
+			row.rate = 9
+
+		pi.save()
+		pi.submit()
+
+		incoming_rate = frappe.db.get_value(
+			"Stock Ledger Entry",
+			{"voucher_type": "Purchase Receipt", "voucher_no": pr.name},
+			"incoming_rate",
+		)
+		# Test 2 : Rate in new PI is lower than PR, so incoming rate should also be lower
+		self.assertEqual(incoming_rate, 50350)
+
+		pi = create_purchase_invoice_from_receipt(pr.name)
+		for row in pi.items:
+			row.qty = 1
+			row.rate = 12
+
+		pi.save()
+		pi.submit()
+
+		incoming_rate = frappe.db.get_value(
+			"Stock Ledger Entry",
+			{"voucher_type": "Purchase Receipt", "voucher_no": pr.name},
+			"incoming_rate",
+		)
+		# Test 3 : Rate in new PI is higher than PR, so incoming rate should also be higher
+		self.assertEqual(incoming_rate, 54766.667)
+
+		frappe.db.set_single_value("Buying Settings", "set_landed_cost_based_on_purchase_invoice_rate", 0)
+
+		frappe.db.set_single_value("Buying Settings", "maintain_same_rate", 1)
+
+	def test_opening_invoice_rounding_adjustment_validation(self):
+		pi = make_purchase_invoice(do_not_save=1)
+		pi.items[0].rate = 99.98
+		pi.items[0].qty = 1
+		pi.items[0].expense_account = "Temporary Opening - _TC"
+		pi.is_opening = "Yes"
+		pi.save()
+		self.assertRaises(frappe.ValidationError, pi.submit)
+
+	def _create_opening_roundoff_account(self, company_name):
+		liability_root = frappe.db.get_all(
+			"Account",
+			filters={"company": company_name, "root_type": "Liability", "disabled": 0},
+			order_by="lft",
+			limit=1,
+		)[0]
+
+		# setup round off account
+		if acc := frappe.db.exists(
+			"Account",
+			{
+				"account_name": "Round Off for Opening",
+				"account_type": "Round Off for Opening",
+				"company": company_name,
+			},
+		):
+			frappe.db.set_value("Company", company_name, "round_off_for_opening", acc)
+		else:
+			acc = frappe.new_doc("Account")
+			acc.company = company_name
+			acc.parent_account = liability_root.name
+			acc.account_name = "Round Off for Opening"
+			acc.account_type = "Round Off for Opening"
+			acc.save()
+			frappe.db.set_value("Company", company_name, "round_off_for_opening", acc.name)
+
+	def test_ledger_entries_of_opening_invoice_with_rounding_adjustment(self):
+		pi = make_purchase_invoice(do_not_save=1)
+		pi.items[0].rate = 99.98
+		pi.items[0].qty = 1
+		pi.items[0].expense_account = "Temporary Opening - _TC"
+		pi.is_opening = "Yes"
+		pi.save()
+		self._create_opening_roundoff_account(pi.company)
+		pi.submit()
+		actual = frappe.db.get_all(
+			"GL Entry",
+			filters={"voucher_no": pi.name, "is_opening": "Yes", "is_cancelled": False},
+			fields=["account", "debit", "credit", "is_opening"],
+			order_by="account,debit",
+		)
+		expected = [
+			{"account": "Creditors - _TC", "debit": 0.0, "credit": 100.0, "is_opening": "Yes"},
+			{"account": "Round Off for Opening - _TC", "debit": 0.02, "credit": 0.0, "is_opening": "Yes"},
+			{"account": "Temporary Opening - _TC", "debit": 99.98, "credit": 0.0, "is_opening": "Yes"},
+		]
+		self.assertEqual(len(actual), 3)
+		self.assertEqual(expected, actual)
+
+	def test_invoice_against_returned_pr(self):
+		from erpnext.stock.doctype.item.test_item import make_item
+		from erpnext.stock.doctype.purchase_receipt.purchase_receipt import (
+			make_purchase_invoice as make_purchase_invoice_from_pr,
+		)
+		from erpnext.stock.doctype.purchase_receipt.purchase_receipt import (
+			make_purchase_return_against_rejected_warehouse,
+		)
+
+		item = make_item("_Test Item For Invoice Against Returned PR", properties={"is_stock_item": 1}).name
+
+		original_value = frappe.db.get_single_value(
+			"Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice"
+		)
+		frappe.db.set_single_value("Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice", 0)
+
+		pr = make_purchase_receipt(item_code=item, qty=5, rejected_qty=5, rate=100)
+		pr_return = make_purchase_return_against_rejected_warehouse(pr.name)
+		pr_return.submit()
+
+		pi = make_purchase_invoice_from_pr(pr.name)
+		pi.save()
+		self.assertEqual(pi.items[0].qty, 5.0)
+
+		frappe.db.set_single_value(
+			"Buying Settings", "bill_for_rejected_quantity_in_purchase_invoice", original_value
+		)
+
+	def test_trx_currency_debit_credit_for_high_precision(self):
+		exc_rate = 0.737517516
+		pi = make_purchase_invoice(
+			currency="USD", conversion_rate=exc_rate, qty=1, rate=2000, do_not_save=True
+		)
+		pi.supplier = "_Test Supplier USD"
+		pi.save().submit()
+
+		expected = (
+			("_Test Account Cost for Goods Sold - _TC", 1475.04, 0.0, 2000.0, 0.0, "USD", exc_rate),
+			("_Test Payable USD - _TC", 0.0, 1475.04, 0.0, 2000.0, "USD", exc_rate),
+		)
+
+		actual = frappe.db.get_all(
+			"GL Entry",
+			filters={"voucher_no": pi.name},
+			fields=[
+				"account",
+				"debit",
+				"credit",
+				"debit_in_transaction_currency",
+				"credit_in_transaction_currency",
+				"transaction_currency",
+				"transaction_exchange_rate",
+			],
+			order_by="account",
+			as_list=1,
+		)
+		self.assertEqual(actual, expected)
+
+	def test_prevents_fully_returned_invoice_with_zero_quantity(self):
+		from erpnext.controllers.sales_and_purchase_return import StockOverReturnError, make_return_doc
+
+		invoice = make_purchase_invoice(qty=10)
+
+		return_doc = make_return_doc(invoice.doctype, invoice.name)
+		return_doc.items[0].qty = -10
+		return_doc.save().submit()
+
+		return_doc = make_return_doc(invoice.doctype, invoice.name)
+		return_doc.items[0].qty = 0
+
+		self.assertRaises(StockOverReturnError, return_doc.save)
+
+	def test_apply_discount_on_grand_total(self):
+		"""
+		To test if after applying discount on grand total,
+		the grand total is calculated correctly without any rounding errors
+		"""
+		invoice = make_purchase_invoice(qty=2, rate=100, do_not_save=True, do_not_submit=True)
+		invoice.append(
+			"items",
+			{
+				"item_code": "_Test Item",
+				"qty": 1,
+				"rate": 21.39,
+			},
+		)
+		invoice.append(
+			"taxes",
+			{
+				"charge_type": "On Net Total",
+				"account_head": "_Test Account VAT - _TC",
+				"description": "VAT",
+				"rate": 15.5,
+			},
+		)
+
+		# the grand total here will be 255.71
+		invoice.disable_rounded_total = 1
+		# apply discount on grand total to adjust the grand total to 255
+		invoice.discount_amount = 0.71
+		invoice.save()
+
+		# check if grand total is 496 and not something like 254.99 due to rounding errors
+		self.assertEqual(invoice.grand_total, 255)
+
+	def test_apply_discount_on_grand_total_with_previous_row_total_tax(self):
+		"""
+		To test if after applying discount on grand total,
+		where the tax is calculated on previous row total, the grand total is calculated correctly
+		"""
+
+		invoice = make_purchase_invoice(qty=2, rate=100, do_not_save=True, do_not_submit=True)
+		invoice.extend(
+			"taxes",
+			[
+				{
+					"charge_type": "Actual",
+					"account_head": "_Test Account VAT - _TC",
+					"description": "VAT",
+					"tax_amount": 100,
+				},
+				{
+					"charge_type": "On Previous Row Amount",
+					"account_head": "_Test Account VAT - _TC",
+					"description": "VAT",
+					"row_id": 1,
+					"rate": 10,
+				},
+				{
+					"charge_type": "On Previous Row Total",
+					"account_head": "_Test Account VAT - _TC",
+					"description": "VAT",
+					"row_id": 1,
+					"rate": 10,
+				},
+			],
+		)
+
+		# the total here will be 340, so applying 40 discount
+		invoice.discount_amount = 40
+		invoice.save()
+
+		self.assertEqual(invoice.grand_total, 300)
 
 
 def set_advance_flag(company, flag, default_account):

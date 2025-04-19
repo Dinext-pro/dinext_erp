@@ -108,8 +108,18 @@ class BankClearance(Document):
 				if not d.clearance_date:
 					d.clearance_date = None
 
-				payment_entry = frappe.get_doc(d.payment_document, d.payment_entry)
-				payment_entry.db_set("clearance_date", d.clearance_date)
+				if d.payment_document == "Sales Invoice":
+					frappe.db.set_value(
+						"Sales Invoice Payment",
+						{"parent": d.payment_entry, "account": self.get("account"), "amount": [">", 0]},
+						"clearance_date",
+						d.clearance_date,
+					)
+
+				else:
+					# using db_set to trigger notification
+					payment_entry = frappe.get_doc(d.payment_document, d.payment_entry)
+					payment_entry.db_set("clearance_date", d.clearance_date)
 
 				clearance_date_updated = True
 
@@ -149,16 +159,13 @@ def get_payment_entries_for_bank_clearance(
 		as_dict=1,
 	)
 
-	if bank_account:
-		condition += "and bank_account = %(bank_account)s"
-
 	payment_entries = frappe.db.sql(
 		f"""
 			select
 				"Payment Entry" as payment_document, name as payment_entry,
 				reference_no as cheque_number, reference_date as cheque_date,
 				if(paid_from=%(account)s, paid_amount + total_taxes_and_charges, 0) as credit,
-				if(paid_from=%(account)s, 0, received_amount) as debit,
+				if(paid_from=%(account)s, 0, received_amount + total_taxes_and_charges) as debit,
 				posting_date, ifnull(party,if(paid_from=%(account)s,paid_to,paid_from)) as against_account, clearance_date,
 				if(paid_to=%(account)s, paid_to_account_currency, paid_from_account_currency) as account_currency
 			from `tabPayment Entry`
@@ -173,7 +180,6 @@ def get_payment_entries_for_bank_clearance(
 			"account": account,
 			"from": from_date,
 			"to": to_date,
-			"bank_account": bank_account,
 		},
 		as_dict=1,
 	)
