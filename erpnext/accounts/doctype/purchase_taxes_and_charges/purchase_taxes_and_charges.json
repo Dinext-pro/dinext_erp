@@ -239,23 +239,14 @@
  "idx": 1,
  "istable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2024-04-08 19:51:36.678551",
-=======
  "modified": "2025-04-15 13:14:48.936047",
->>>>>>> be556167b1 (fix: Modify .json from desk to change `modified`)
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Taxes and Charges",
  "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [],
-<<<<<<< HEAD
  "sort_field": "modified",
-=======
- "row_format": "Dynamic",
- "sort_field": "creation",
->>>>>>> be556167b1 (fix: Modify .json from desk to change `modified`)
  "sort_order": "DESC",
  "track_changes": 1
 }
