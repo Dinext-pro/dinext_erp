@@ -357,15 +357,7 @@
  "idx": 70,
  "is_submittable": 1,
  "links": [],
-<<<<<<< HEAD
-<<<<<<< HEAD
- "modified": "2023-09-15 12:07:24.789471",
-=======
  "modified": "2025-04-21 18:36:04.827917",
->>>>>>> ecf15130ba (fix: backslash in url)
-=======
- "modified": "2024-12-16 12:46:02.262167",
->>>>>>> eaaf34cda6 (fix: revert unintended changes)
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Material Request",
