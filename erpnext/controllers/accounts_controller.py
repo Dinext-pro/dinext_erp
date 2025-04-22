@@ -1841,8 +1841,11 @@ class AccountsController(TransactionBase):
 			and self.get("discount_amount")
 			and self.get("additional_discount_account")
 		):
-			amount = item.amount
-			base_amount = item.base_amount
+			amount += item.distributed_discount_amount
+			base_amount += flt(
+				item.distributed_discount_amount * self.get("conversion_rate"),
+				item.precision("distributed_discount_amount"),
+			)
 
 		return amount, base_amount
 
@@ -2395,13 +2398,12 @@ class AccountsController(TransactionBase):
 						base_grand_total * flt(d.invoice_portion) / 100, d.precision("base_payment_amount")
 					)
 					d.outstanding = d.payment_amount
-					d.base_outstanding = flt(
-						d.payment_amount * self.get("conversion_rate"), d.precision("base_outstanding")
-					)
+					d.base_outstanding = d.base_payment_amount
 				elif not d.invoice_portion:
 					d.base_payment_amount = flt(
 						d.payment_amount * self.get("conversion_rate"), d.precision("base_payment_amount")
 					)
+					d.base_outstanding = d.base_payment_amount
 		else:
 			self.fetch_payment_terms_from_order(
 				po_or_so, doctype, grand_total, base_grand_total, automatically_fetch_payment_terms
