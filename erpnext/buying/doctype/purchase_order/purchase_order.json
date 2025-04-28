@@ -1271,20 +1271,6 @@
    "fieldtype": "Tab Break",
    "label": "Connections",
    "show_dashboard": 1
-<<<<<<< HEAD
-=======
-  },
-  {
-   "fieldname": "advance_payment_status",
-   "fieldtype": "Select",
-   "hidden": 1,
-   "in_standard_filter": 1,
-   "label": "Advance Payment Status",
-   "no_copy": 1,
-   "oldfieldname": "status",
-   "oldfieldtype": "Select",
-   "options": "Not Initiated\nInitiated\nPartially Paid\nFully Paid",
-   "print_hide": 1
   },
   {
    "fieldname": "dispatch_address",
@@ -1299,7 +1285,6 @@
    "label": "Dispatch Address Details",
    "print_hide": 1,
    "read_only": 1
->>>>>>> 54b5205221 (feat: add dispatch address fields to purchase doctypes)
   }
  ],
  "grid_page_length": 50,
@@ -1307,11 +1292,7 @@
  "idx": 105,
  "is_submittable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2024-03-20 16:03:31.611808",
-=======
  "modified": "2025-04-09 16:54:08.836106",
->>>>>>> 54b5205221 (feat: add dispatch address fields to purchase doctypes)
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Purchase Order",

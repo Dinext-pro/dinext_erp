@@ -1629,14 +1629,6 @@
    "fieldname": "update_outstanding_for_self",
    "fieldtype": "Check",
    "label": "Update Outstanding for Self"
-<<<<<<< HEAD
-=======
-  },
-  {
-   "fieldname": "sender",
-   "fieldtype": "Data",
-   "label": "Sender",
-   "options": "Email"
   },
   {
    "fieldname": "dispatch_address_display",
@@ -1651,7 +1643,6 @@
    "label": "Select Dispatch Address ",
    "options": "Address",
    "print_hide": 1
->>>>>>> 54b5205221 (feat: add dispatch address fields to purchase doctypes)
   }
  ],
  "grid_page_length": 50,

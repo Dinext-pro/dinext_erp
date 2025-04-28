@@ -590,19 +590,6 @@ body[data-route="pos"] {
 	justify-content: center;
 }
 
-<<<<<<< HEAD
 .frappe-control[data-fieldname="other_charges_calculation"] .ql-editor {
-=======
-.frappe-control[data-fieldname="other_charges_calculation"] .ql-editor,
-.frappe-control[data-fieldname="address_display"] .ql-editor,
-.frappe-control[data-fieldname="shipping_address_display"] .ql-editor,
-.frappe-control[data-fieldname="shipping_address"] .ql-editor,
-.frappe-control[data-fieldname="dispatch_address_display"] .ql-editor,
-.frappe-control[data-fieldname="dispatch_address"] .ql-editor,
-.frappe-control[data-fieldname="source_address_display"] .ql-editor,
-.frappe-control[data-fieldname="target_address_display"] .ql-editor,
-.frappe-control[data-fieldname="billing_address_display"] .ql-editor,
-.frappe-control[data-fieldname="company_address_display"] .ql-editor {
->>>>>>> 8ccd7a3e61 (refactor: address field position)
 	white-space: normal;
 }
