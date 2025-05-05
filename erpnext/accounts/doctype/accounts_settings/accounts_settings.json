@@ -535,8 +535,6 @@
    "fieldtype": "Select",
    "label": "Posting Date Inheritance for Exchange Gain / Loss",
    "options": "Invoice\nPayment\nReconciliation Date"
-<<<<<<< HEAD
-=======
   },
   {
    "fieldname": "column_break_xrnd",
@@ -565,7 +563,6 @@
    "fieldname": "legacy_section",
    "fieldtype": "Section Break",
    "label": "Legacy Fields"
->>>>>>> 66fd639b52 (refactor: configurable fetch method for AR / AP report)
   }
  ],
  "icon": "icon-cog",
@@ -573,11 +570,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2025-01-23 13:15:44.077853",
-=======
  "modified": "2025-05-05 12:29:38.302027",
->>>>>>> 66fd639b52 (refactor: configurable fetch method for AR / AP report)
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounts Settings",
