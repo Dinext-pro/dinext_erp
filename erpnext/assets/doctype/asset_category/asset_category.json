@@ -73,11 +73,7 @@
   }
  ],
  "links": [],
-<<<<<<< HEAD
- "modified": "2021-02-24 15:05:38.621803",
-=======
  "modified": "2025-05-13 15:33:03.791814",
->>>>>>> fbbfd6531b (feat: add non depreciable category checkbox in asset category)
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Category",
