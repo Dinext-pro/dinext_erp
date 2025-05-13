@@ -9,12 +9,8 @@ from frappe.core.doctype.user_permission.test_user_permission import create_user
 from frappe.tests.utils import FrappeTestCase, change_settings
 from frappe.utils import add_days, flt, getdate, nowdate, today
 
-<<<<<<< HEAD
 from erpnext.accounts.test.accounts_mixin import AccountsTestMixin
-from erpnext.controllers.accounts_controller import update_child_qty_rate
-=======
 from erpnext.controllers.accounts_controller import InvalidQtyError, update_child_qty_rate
->>>>>>> b2d8a44199 (test: Add, expand and refine test-cases for zero-quantity transactions.)
 from erpnext.maintenance.doctype.maintenance_schedule.test_maintenance_schedule import (
 	make_maintenance_schedule,
 )

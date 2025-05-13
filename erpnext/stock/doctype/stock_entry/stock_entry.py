@@ -23,14 +23,7 @@ from frappe.utils import (
 
 import erpnext
 from erpnext.accounts.general_ledger import process_gl_map
-<<<<<<< HEAD
-<<<<<<< HEAD
 from erpnext.buying.utils import check_on_hold_or_closed_status
-=======
-from erpnext.controllers.accounts_controller import InvalidQtyError
->>>>>>> b2d8a44199 (test: Add, expand and refine test-cases for zero-quantity transactions.)
-=======
->>>>>>> 4918aeb4c6 (refactor: Consolidate duplicate zero-quantity transaction Items checks.)
 from erpnext.controllers.taxes_and_totals import init_landed_taxes_and_totals
 from erpnext.manufacturing.doctype.bom.bom import (
 	add_additional_cost,
