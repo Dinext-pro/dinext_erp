@@ -263,12 +263,7 @@
    "write": 1
   }
  ],
-<<<<<<< HEAD
  "sort_field": "modified",
-=======
- "row_format": "Dynamic",
- "sort_field": "creation",
->>>>>>> 2d9a6a4de8 (feat: add checbox for validating time logs in job card)
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1
