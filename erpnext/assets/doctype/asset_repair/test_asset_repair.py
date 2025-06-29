@@ -4,12 +4,7 @@
 import unittest
 
 import frappe
-<<<<<<< HEAD
-from frappe.utils import flt, nowdate, nowtime, today
-=======
-from frappe.tests import IntegrationTestCase
 from frappe.utils import add_months, flt, get_first_day, nowdate, nowtime, today
->>>>>>> cfe04a2aaf (test: asset status validation)
 
 from erpnext.assets.doctype.asset.asset import (
 	get_asset_account,
