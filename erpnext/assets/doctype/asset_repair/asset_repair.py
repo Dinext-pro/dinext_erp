@@ -96,7 +96,6 @@ class AssetRepair(AccountsController):
 		if self.get("stock_consumption") or self.get("capitalize_repair_cost"):
 			self.asset_doc.flags.increase_in_asset_value_due_to_repair = True
 
-<<<<<<< HEAD
 			self.increase_asset_value()
 
 			total_repair_cost = self.get_total_value_of_stock_consumed()
@@ -132,17 +131,15 @@ class AssetRepair(AccountsController):
 					),
 				)
 
-	def before_cancel(self):
-=======
+	
 	def cancel_sabb(self):
 		for row in self.stock_items:
 			if sabb := row.serial_and_batch_bundle:
 				row.db_set("serial_and_batch_bundle", None)
 				doc = frappe.get_doc("Serial and Batch Bundle", sabb)
 				doc.cancel()
-
-	def on_cancel(self):
->>>>>>> ae77c609ff (fix: option to pick serial / batch for asset repair)
+	
+	def before_cancel(self):
 		self.asset_doc = frappe.get_doc("Asset", self.asset)
 
 		self.asset_doc.flags.increase_in_asset_value_due_to_repair = False
