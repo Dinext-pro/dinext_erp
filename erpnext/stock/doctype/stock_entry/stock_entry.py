@@ -244,11 +244,7 @@ class StockEntry(StockController):
 	def on_submit(self):
 		self.validate_closed_subcontracting_order()
 		self.make_bundle_using_old_serial_batch_fields()
-<<<<<<< HEAD
-=======
-		self.update_work_order()
 		self.update_disassembled_order()
->>>>>>> 3e4d160626 (fix: disassemble qty calculation & max calculation to be allowed to create it)
 		self.update_stock_ledger()
 		self.update_work_order()
 		self.validate_subcontract_order()
@@ -1624,8 +1620,6 @@ class StockEntry(StockController):
 			if not pro_doc.operations:
 				pro_doc.set_actual_dates()
 
-<<<<<<< HEAD
-=======
 	def update_disassembled_order(self, is_cancel=False):
 		if not self.work_order:
 			return
@@ -1633,41 +1627,6 @@ class StockEntry(StockController):
 			pro_doc = frappe.get_doc("Work Order", self.work_order)
 			pro_doc.run_method("update_disassembled_qty", self.fg_completed_qty, is_cancel)
 
-	def make_stock_reserve_for_wip_and_fg(self):
-		if self.is_stock_reserve_for_work_order():
-			pro_doc = frappe.get_doc("Work Order", self.work_order)
-			if (
-				self.purpose == "Manufacture"
-				and not pro_doc.sales_order
-				and not pro_doc.production_plan_sub_assembly_item
-			):
-				return
-
-			pro_doc.set_reserved_qty_for_wip_and_fg(self)
-
-	def cancel_stock_reserve_for_wip_and_fg(self):
-		if self.is_stock_reserve_for_work_order():
-			pro_doc = frappe.get_doc("Work Order", self.work_order)
-			if (
-				self.purpose == "Manufacture"
-				and not pro_doc.sales_order
-				and not pro_doc.production_plan_sub_assembly_item
-			):
-				return
-
-			pro_doc.cancel_reserved_qty_for_wip_and_fg(self)
-
-	def is_stock_reserve_for_work_order(self):
-		if (
-			self.work_order
-			and self.stock_entry_type in ["Material Transfer for Manufacture", "Manufacture"]
-			and frappe.get_cached_value("Work Order", self.work_order, "reserve_stock")
-		):
-			return True
-
-		return False
-
->>>>>>> 3e4d160626 (fix: disassemble qty calculation & max calculation to be allowed to create it)
 	@frappe.whitelist()
 	def get_item_details(self, args=None, for_update=False):
 		item = frappe.qb.DocType("Item")
