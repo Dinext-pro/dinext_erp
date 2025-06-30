@@ -586,25 +586,7 @@
   },
   {
    "fieldname": "section_break_ndpq",
-<<<<<<< HEAD
    "fieldtype": "Section Break"
-=======
-   "fieldtype": "Section Break",
-   "label": "Required Items"
-  },
-  {
-   "default": "0",
-   "fetch_from": "bom_no.track_semi_finished_goods",
-   "fieldname": "track_semi_finished_goods",
-   "fieldtype": "Check",
-   "label": "Track Semi Finished Goods",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "reserve_stock",
-   "fieldtype": "Check",
-   "label": " Reserve Stock"
   },
   {
    "depends_on": "eval:doc.docstatus==1",
@@ -613,7 +595,6 @@
    "label": "Disassembled Qty",
    "no_copy": 1,
    "read_only": 1
->>>>>>> 3e4d160626 (fix: disassemble qty calculation & max calculation to be allowed to create it)
   }
  ],
  "icon": "fa fa-cogs",
@@ -621,11 +602,7 @@
  "image_field": "image",
  "is_submittable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2024-02-11 15:47:13.454422",
-=======
  "modified": "2025-06-21 00:55:45.916224",
->>>>>>> 3e4d160626 (fix: disassemble qty calculation & max calculation to be allowed to create it)
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Work Order",
