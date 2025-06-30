@@ -131,14 +131,13 @@ class AssetRepair(AccountsController):
 					),
 				)
 
-	
 	def cancel_sabb(self):
 		for row in self.stock_items:
 			if sabb := row.serial_and_batch_bundle:
 				row.db_set("serial_and_batch_bundle", None)
 				doc = frappe.get_doc("Serial and Batch Bundle", sabb)
 				doc.cancel()
-	
+
 	def before_cancel(self):
 		self.asset_doc = frappe.get_doc("Asset", self.asset)
 
