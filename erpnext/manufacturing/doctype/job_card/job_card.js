@@ -71,7 +71,7 @@ frappe.ui.form.on("Job Card", {
 						frm.trigger("make_stock_entry");
 					},
 					__("Create")
-				).addClass("btn-primary");
+				);
 			}
 		}
 
