@@ -189,16 +189,14 @@ class SerialBatchBundle:
 				ste_detail = frappe.db.get_value(
 					"Stock Entry Detail",
 					self.sle.voucher_detail_no,
-					["additional_cost", "landed_cost_voucher_amount", "transfer_qty"],
+					["additional_cost", "transfer_qty"],
 					as_dict=True,
 				)
 
 				additional_cost = 0.0
 
 				if ste_detail:
-					additional_cost = (
-						flt(ste_detail.additional_cost) + flt(ste_detail.landed_cost_voucher_amount)
-					) / flt(ste_detail.transfer_qty)
+					additional_cost = flt(ste_detail.additional_cost) / flt(ste_detail.transfer_qty)
 
 				values_to_update["basic_rate"] = basic_rate
 				values_to_update["valuation_rate"] = basic_rate + additional_cost
