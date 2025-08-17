@@ -2020,75 +2020,6 @@ class TestStockEntry(FrappeTestCase):
 
 		self.assertEqual(se.items[0].basic_rate, 300)
 
-
-<<<<<<< HEAD
-def make_serialized_item(**args):
-=======
-		company = "_Test Periodic Accounting Company"
-
-		frappe.get_doc(
-			{
-				"doctype": "Company",
-				"company_name": company,
-				"abbr": "_TPC",
-				"default_currency": "INR",
-				"enable_perpetual_inventory": 0,
-			}
-		).insert(ignore_permissions=True)
-
-		warehouse = frappe.db.get_value("Warehouse", {"company": company, "is_group": 0}, "name")
-
-		make_stock_entry(
-			item_code=item_code,
-			qty=10,
-			to_warehouse=warehouse,
-			basic_rate=100,
-			posting_date=add_days(nowdate(), -2),
-		)
-
-		jv = frappe.new_doc("Journal Entry")
-		jv.voucher_type = "Periodic Accounting Entry"
-		jv.posting_date = add_days(nowdate(), -1)
-		jv.posting_time = nowtime()
-		jv.company = company
-		jv.for_all_stock_asset_accounts = 1
-		jv.periodic_entry_difference_account = "Stock Adjustment - _TPC"
-		jv.get_balance_for_periodic_accounting()
-		jv.save()
-		jv.submit()
-
-		self.assertEqual(len(jv.accounts), 2)
-		self.assertEqual(jv.accounts[0].debit_in_account_currency, 1000)
-		self.assertEqual(jv.accounts[1].credit_in_account_currency, 1000)
-		self.assertEqual(jv.accounts[0].account, "Stock In Hand - _TPC")
-		self.assertEqual(jv.accounts[1].account, "Stock Adjustment - _TPC")
-
-		make_stock_entry(
-			item_code=item_code,
-			qty=5,
-			from_warehouse=warehouse,
-			company=company,
-			posting_date=nowdate(),
-			posting_time=nowtime(),
-		)
-
-		jv = frappe.new_doc("Journal Entry")
-		jv.voucher_type = "Periodic Accounting Entry"
-		jv.posting_date = nowdate()
-		jv.posting_time = nowtime()
-		jv.company = company
-		jv.for_all_stock_asset_accounts = 1
-		jv.periodic_entry_difference_account = "Stock Adjustment - _TPC"
-		jv.get_balance_for_periodic_accounting()
-		jv.save()
-		jv.submit()
-
-		self.assertEqual(len(jv.accounts), 2)
-		self.assertEqual(jv.accounts[0].credit_in_account_currency, 500)
-		self.assertEqual(jv.accounts[1].debit_in_account_currency, 500)
-		self.assertEqual(jv.accounts[0].account, "Stock In Hand - _TPC")
-		self.assertEqual(jv.accounts[1].account, "Stock Adjustment - _TPC")
-
 	def test_batch_item_additional_cost_for_material_transfer_entry(self):
 		item_code = "_Test Batch Item Additional Cost MTE"
 		make_item(
@@ -2154,8 +2085,7 @@ def make_serialized_item(**args):
 		self.assertEqual(incoming_rate, 125.0)
 
 
-def make_serialized_item(self, **args):
->>>>>>> bbc772abe7 (fix: additional cost not consider in valuation rate for Stock Entry transfer)
+def make_serialized_item(**args):
 	args = frappe._dict(args)
 	se = frappe.copy_doc(test_records[0])
 
