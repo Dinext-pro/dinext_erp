@@ -681,6 +681,7 @@ class POSInvoice(SalesInvoice):
 				"print_format": print_format,
 				"campaign": profile.get("campaign"),
 				"allow_print_before_pay": profile.get("allow_print_before_pay"),
+				"skip_default_payment": profile.get("disable_grand_total_to_default_mop"),
 			}
 
 	@frappe.whitelist()
