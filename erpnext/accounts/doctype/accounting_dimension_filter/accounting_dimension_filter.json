@@ -101,11 +101,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2023-06-07 14:59:41.869117",
-=======
  "modified": "2025-08-08 14:13:22.203011",
->>>>>>> ac2acc535d (fix: add fieldname in accounting dimension filter)
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounting Dimension Filter",
@@ -150,12 +146,7 @@
   }
  ],
  "quick_entry": 1,
-<<<<<<< HEAD
- "sort_field": "modified",
-=======
- "row_format": "Dynamic",
  "sort_field": "creation",
->>>>>>> ac2acc535d (fix: add fieldname in accounting dimension filter)
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1
