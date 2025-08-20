@@ -1830,7 +1830,7 @@ class TestSalesOrder(AccountsTestMixin, FrappeTestCase):
 		wo.reload()
 		so.reload()
 		self.assertEqual(so.items[0].work_order_qty, wo.produced_qty)
-		self.assertEqual(mr.status, "Manufactured")
+		self.assertEqual(mr.status, "Ordered")
 
 	@change_settings(
 		"Accounts Settings",
