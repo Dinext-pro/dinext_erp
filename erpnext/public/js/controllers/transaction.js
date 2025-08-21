@@ -551,6 +551,32 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 
 	item_code(doc, cdt, cdn) {
 		var me = this;
+<<<<<<< HEAD
+=======
+		frappe.flags.dialog_set = false;
+
+		// Experimental: This will be removed once stability is achieved.
+		if (frappe.boot.sysdefaults.use_server_side_reactivity) {
+			var item = frappe.get_doc(cdt, cdn);
+			frappe.call({
+				doc: doc,
+				method: "process_item_selection",
+				args: {
+					item_idx: item.idx,
+				},
+				callback: function (r) {
+					if (!r.exc) {
+						me.frm.refresh_fields();
+					}
+				},
+			});
+		} else {
+			me.process_item_selection(doc, cdt, cdn);
+		}
+	}
+
+	process_item_selection(doc, cdt, cdn) {
+>>>>>>> 5503d4b05b (fix: Serial Nos popup only appears 1 time)
 		var item = frappe.get_doc(cdt, cdn);
 		var update_stock = 0, show_batch_dialog = 0;
 
