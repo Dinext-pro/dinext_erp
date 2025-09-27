@@ -202,14 +202,6 @@ class SubcontractingReceipt(SubcontractingController):
 			if item.subcontracting_order:
 				check_on_hold_or_closed_status("Subcontracting Order", item.subcontracting_order)
 
-<<<<<<< HEAD
-=======
-	def update_job_card(self):
-		for row in self.get("items"):
-			if row.job_card:
-				doc = frappe.get_doc("Job Card", row.job_card)
-				doc.set_manufactured_qty()
-
 	def set_service_expense_account(self, default_expense_account):
 		for row in self.get("items"):
 			if not row.service_expense_account and row.purchase_order_item:
@@ -243,18 +235,6 @@ class SubcontractingReceipt(SubcontractingController):
 			if not row.expense_account:
 				row.expense_account = default_expense_account
 
-	def get_manufactured_qty(self, job_card):
-		table = frappe.qb.DocType("Subcontracting Receipt Item")
-		query = (
-			frappe.qb.from_(table)
-			.select(Sum(table.qty))
-			.where((table.job_card == job_card) & (table.docstatus == 1))
-		)
-
-		qty = query.run()[0][0] or 0.0
-		return flt(qty)
-
->>>>>>> 6e597b9c42 (feat: service expense account in the subcontracting receipt)
 	def validate_items_qty(self):
 		for item in self.items:
 			if not (item.qty or item.rejected_qty):
