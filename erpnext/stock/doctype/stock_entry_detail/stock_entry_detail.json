@@ -616,11 +616,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2025-03-26 21:01:58.544797",
-=======
- "modified": "2025-10-14 14:10:38.373099",
->>>>>>> e7b64175fd (perf: optimize sql query)
+ "modified": "2025-10-14 15:10:38.373099",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Entry Detail",
