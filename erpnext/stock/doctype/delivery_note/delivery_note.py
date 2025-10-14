@@ -812,20 +812,6 @@ def get_returned_qty_map(delivery_note):
 	dni = DocType("Delivery Note Item")
 
 	returned_qty_map = frappe._dict(
-<<<<<<< HEAD
-		frappe.db.sql(
-			"""select dn_item.dn_detail, sum(abs(dn_item.qty)) as qty
-			from `tabDelivery Note Item` dn_item, `tabDelivery Note` dn
-			where dn.name = dn_item.parent
-				and dn.docstatus = 1
-				and dn.is_return = 1
-				and dn.return_against = %s
-				and dn_item.qty <= 0
-				group by dn_item.item_code
-		""",
-			delivery_note,
-		)
-=======
 		(
 			frappe.qb.from_(dni)
 			.join(dn)
@@ -839,7 +825,6 @@ def get_returned_qty_map(delivery_note):
 			)
 			.groupby(dni.dn_detail)
 		).run()
->>>>>>> fd9167f2af (fix: add GROUP BY for dn_detail and convert SQL query to QB)
 	)
 
 	return returned_qty_map
