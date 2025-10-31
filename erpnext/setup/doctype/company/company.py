@@ -180,9 +180,7 @@ class Company(NestedSet):
 			["Default Income Account", "default_income_account"],
 			["Stock Received But Not Billed Account", "stock_received_but_not_billed"],
 			["Stock Adjustment Account", "stock_adjustment_account"],
-<<<<<<< HEAD
 			["Expense Included In Valuation Account", "expenses_included_in_valuation"],
-=======
 			["Write Off Account", "write_off_account"],
 			["Default Payment Discount Account", "default_discount_account"],
 			["Unrealized Profit / Loss Account", "unrealized_profit_loss_account"],
@@ -194,7 +192,6 @@ class Company(NestedSet):
 			["Accumulated Depreciation Account", "accumulated_depreciation_account"],
 			["Depreciation Expense Account", "depreciation_expense_account"],
 			["Gain/Loss Account on Asset Disposal", "disposal_account"],
->>>>>>> 4af1ae1470 (fix: added validation for default accounts on company)
 		]
 
 		for account in accounts:
