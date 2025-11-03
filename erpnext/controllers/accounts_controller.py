@@ -2026,7 +2026,7 @@ class AccountsController(TransactionBase):
 									discount_amount * self.get("conversion_rate"),
 									item.precision("discount_amount"),
 								),
-								dr_or_cr + "_in_account_currency": flt(
+								dr_or_cr + "_in_transaction_currency": flt(
 									discount_amount, item.precision("discount_amount")
 								),
 								"cost_center": item.cost_center,
@@ -2047,7 +2047,7 @@ class AccountsController(TransactionBase):
 									discount_amount * self.get("conversion_rate"),
 									item.precision("discount_amount"),
 								),
-								rev_dr_cr + "_in_account_currency": flt(
+								rev_dr_cr + "_in_transaction_currency": flt(
 									discount_amount, item.precision("discount_amount")
 								),
 								"cost_center": item.cost_center,
