@@ -119,12 +119,8 @@ def get_assets_details(assets):
 
 	fields = [
 		"name as asset",
-<<<<<<< HEAD
-		"gross_purchase_amount",
-=======
 		"asset_name",
-		"net_purchase_amount",
->>>>>>> f3eda02972 (feat: add asset name column)
+		"gross_purchase_amount",
 		"opening_accumulated_depreciation",
 		"asset_category",
 		"status",
