@@ -87,11 +87,7 @@ class Task(NestedSet):
 		self.update_depends_on()
 		self.validate_dependencies_for_template_task()
 		self.validate_completed_on()
-<<<<<<< HEAD
-=======
-		self.set_default_end_date_if_missing()
 		self.validate_parent_is_group()
->>>>>>> ed1a1099cb (fix: validate is_group for parent task)
 
 	def validate_dates(self):
 		self.validate_from_to_dates("exp_start_date", "exp_end_date")

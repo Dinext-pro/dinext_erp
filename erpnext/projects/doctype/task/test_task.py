@@ -6,12 +6,7 @@ import unittest
 import frappe
 from frappe.utils import add_days, getdate, nowdate
 
-<<<<<<< HEAD
-from erpnext.projects.doctype.task.task import CircularReferenceError
-=======
 from erpnext.projects.doctype.task.task import CircularReferenceError, ParentIsGroupError
-from erpnext.tests.utils import ERPNextTestSuite
->>>>>>> 291f0c7161 (test: add test for parent task is_group validation)
 
 
 class TestTask(unittest.TestCase):
