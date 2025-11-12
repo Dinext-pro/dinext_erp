@@ -4,11 +4,7 @@
 import unittest
 
 import frappe
-<<<<<<< HEAD
-=======
-from frappe.tests import IntegrationTestCase
 from frappe.utils import cint
->>>>>>> 69016a284f (test: added test to validate disabled pos profile)
 
 from erpnext.accounts.doctype.pos_profile.pos_profile import (
 	get_child_nodes,
