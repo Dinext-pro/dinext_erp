@@ -465,7 +465,7 @@ class BOM(WebsiteGenerator):
 				)
 			)
 
-	def get_rm_rate(self, arg):
+	def get_rm_rate(self, arg, notify=True):
 		"""Get raw material rate as per selected method, if bom exists takes bom cost"""
 		rate = 0
 		if not self.rm_cost_as_per:
@@ -491,7 +491,7 @@ class BOM(WebsiteGenerator):
 								),
 								alert=True,
 							)
-						else:
+						elif notify:
 							frappe.msgprint(
 								_("{0} not found for item {1}").format(self.rm_cost_as_per, arg["item_code"]),
 								alert=True,
@@ -796,7 +796,8 @@ class BOM(WebsiteGenerator):
 						"stock_uom": d.stock_uom,
 						"conversion_factor": d.conversion_factor,
 						"sourced_by_supplier": d.sourced_by_supplier,
-					}
+					},
+					notify=False,
 				)
 
 			d.base_rate = flt(d.rate) * flt(self.conversion_rate)
