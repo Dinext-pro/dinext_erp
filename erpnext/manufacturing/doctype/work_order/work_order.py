@@ -1509,7 +1509,7 @@ def make_stock_entry(work_order_id, purpose, qty=None, target_warehouse=None):
 		stock_entry.to_warehouse = target_warehouse or work_order.source_warehouse
 
 	stock_entry.set_stock_entry_type()
-	stock_entry.get_items(qty, work_order.production_item)
+	stock_entry.get_items()
 
 	if purpose != "Disassemble":
 		stock_entry.set_serial_no_batch_for_finished_good()
