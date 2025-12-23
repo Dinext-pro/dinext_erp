@@ -477,6 +477,7 @@ class Asset(AccountsController):
 
 	def set_depreciation_rate(self):
 		for d in self.get("finance_books"):
+			self.validate_asset_finance_books(d)
 			d.rate_of_depreciation = flt(
 				self.get_depreciation_rate(d, on_validate=True), d.precision("rate_of_depreciation")
 			)
@@ -485,6 +486,10 @@ class Asset(AccountsController):
 		row.expected_value_after_useful_life = flt(
 			row.expected_value_after_useful_life, self.precision("gross_purchase_amount")
 		)
+
+		if flt(row.expected_value_after_useful_life) < 0:
+			frappe.throw(_("Row {0}: Expected Value After Useful Life cannot be negative").format(row.idx))
+
 		if flt(row.expected_value_after_useful_life) >= flt(self.gross_purchase_amount):
 			frappe.throw(
 				_("Row {0}: Expected Value After Useful Life must be less than Gross Purchase Amount").format(
@@ -500,6 +505,8 @@ class Asset(AccountsController):
 					title=_("Invalid Schedule"),
 				)
 			row.depreciation_start_date = get_last_day(self.available_for_use_date)
+
+		self.validate_total_number_of_depreciations_and_frequency(row)
 
 		if not self.is_existing_asset:
 			self.opening_accumulated_depreciation = 0
@@ -545,6 +552,15 @@ class Asset(AccountsController):
 					"Depreciation Row {0}: Next Depreciation Date cannot be before Available-for-use Date"
 				).format(row.idx)
 			)
+
+	def validate_total_number_of_depreciations_and_frequency(self, row):
+		if row.total_number_of_depreciations <= 0:
+			frappe.throw(
+				_("Row #{0}: Total Number of Depreciations must be greater than zero").format(row.idx)
+			)
+
+		if row.frequency_of_depreciation <= 0:
+			frappe.throw(_("Row #{0}: Frequency of Depreciation must be greater than zero").format(row.idx))
 
 	def set_total_booked_depreciations(self):
 		# set value of total number of booked depreciations field
