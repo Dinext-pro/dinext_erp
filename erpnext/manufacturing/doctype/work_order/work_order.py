@@ -316,7 +316,7 @@ class WorkOrder(Document):
 		# already ordered qty
 		ordered_qty_against_so = frappe.db.sql(
 			"""select sum(qty) from `tabWork Order`
-			where production_item = %s and sales_order = %s and docstatus < 2 and name != %s""",
+			where production_item = %s and sales_order = %s and docstatus < 2 and status != 'Closed' and name != %s""",
 			(self.production_item, self.sales_order, self.name),
 		)[0][0]
 
@@ -516,6 +516,9 @@ class WorkOrder(Document):
 		self.validate_cancel()
 		self.db_set("status", "Cancelled")
 
+		self.on_close_or_cancel()
+
+	def on_close_or_cancel(self):
 		if self.production_plan and frappe.db.exists(
 			"Production Plan Item Reference", {"parent": self.production_plan}
 		):
@@ -843,7 +846,7 @@ class WorkOrder(Document):
 
 		qty = frappe.db.sql(
 			f""" select sum(qty) from
-			`tabWork Order` where sales_order = %s and docstatus = 1 and {cond}
+			`tabWork Order` where sales_order = %s and docstatus = 1 and status <> 'Closed' and {cond}
 			""",
 			(self.sales_order, (self.product_bundle_item or self.production_item)),
 			as_list=1,
@@ -1604,8 +1607,8 @@ def close_work_order(work_order, status):
 				)
 			)
 
+	work_order.on_close_or_cancel()
 	work_order.update_status(status)
-	work_order.update_planned_qty()
 	frappe.msgprint(_("Work Order has been {0}").format(status))
 	work_order.notify_update()
 	return work_order.status
