@@ -178,7 +178,7 @@ class JournalEntry(AccountsController):
 			return self._submit()
 
 	def before_cancel(self):
-		pass
+		self.has_asset_adjustment_entry()
 
 	def cancel(self):
 		if len(self.accounts) > 100:
@@ -230,8 +230,11 @@ class JournalEntry(AccountsController):
 <<<<<<< HEAD
 =======
 		JournalTaxWithholding(self).on_cancel()
+<<<<<<< HEAD
 		self.has_asset_adjustment_entry()
 >>>>>>> 73b038084b (fix: prevent manual cancellation of the linked Revaluation Journal Entry)
+=======
+>>>>>>> d65cd605a1 (fix: move validation to before_cancel)
 		self.unlink_advance_entry_reference()
 		self.unlink_asset_reference()
 		self.unlink_inter_company_jv()
