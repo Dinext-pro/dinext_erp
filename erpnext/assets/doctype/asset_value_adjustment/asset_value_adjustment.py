@@ -159,6 +159,16 @@ class AssetValueAdjustment(Document):
 
 		self.db_set("journal_entry", je.name)
 
+	def cancel_asset_revaluation_entry(self):
+		if not self.journal_entry:
+			return
+
+		revaluation_entry = frappe.get_doc("Journal Entry", self.journal_entry)
+		if revaluation_entry.docstatus == 1:
+			revaluation_entry.flags.ignore_permissions = True
+			revaluation_entry.flags.via_asset_value_adjustment = True
+			revaluation_entry.cancel()
+
 	def update_asset(self, asset_value=None):
 		difference_amount = self.difference_amount if self.docstatus == 1 else -1 * self.difference_amount
 		asset = self.update_asset_value_after_depreciation(difference_amount)
@@ -180,7 +190,6 @@ class AssetValueAdjustment(Document):
 				get_link_to_form(self.get("doctype"), self.get("name")),
 			)
 
-<<<<<<< HEAD
 		make_new_active_asset_depr_schedules_and_cancel_current_ones(
 			asset,
 			notes,
@@ -190,36 +199,6 @@ class AssetValueAdjustment(Document):
 		)
 		asset.flags.ignore_validate_update_after_submit = True
 		asset.save()
-=======
-		return credit_entry, debit_entry
-
-	def update_accounting_dimensions(self, credit_entry, debit_entry):
-		accounting_dimensions = get_checks_for_pl_and_bs_accounts()
-
-		for dimension in accounting_dimensions:
-			dimension_value = self.get(dimension["fieldname"]) or dimension.get("default_dimension")
-			if dimension.get("mandatory_for_bs"):
-				credit_entry.update({dimension["fieldname"]: dimension_value})
-
-			if dimension.get("mandatory_for_pl"):
-				debit_entry.update({dimension["fieldname"]: dimension_value})
-
-	def cancel_asset_revaluation_entry(self):
-		if not self.journal_entry:
-			return
-
-		revaluation_entry = frappe.get_doc("Journal Entry", self.journal_entry)
-		if revaluation_entry.docstatus == 1:
-			# Ignore permissions to match Journal Entry submission behavior
-			revaluation_entry.flags.ignore_permissions = True
-			revaluation_entry.flags.via_asset_value_adjustment = True
-			revaluation_entry.cancel()
-
-	def update_asset(self):
-		asset = self.update_asset_value_after_depreciation()
-		note = self.get_adjustment_note()
-		reschedule_depreciation(asset, note)
->>>>>>> b1704ccef1 (fix(asset value adjustment): skip cancelling revaluation journal entry if already cancelled)
 		asset.set_status()
 
 	def update_asset_value_after_depreciation(self, difference_amount):
