@@ -2974,9 +2974,6 @@ class TestSalesInvoice(FrappeTestCase):
 		self.assertEqual(sales_invoice.items[0].item_tax_template, "_Test Account Excise Duty @ 10 - _TC")
 		self.assertEqual(sales_invoice.items[0].item_tax_rate, item_tax_map)
 
-<<<<<<< HEAD
-	@change_settings("Selling Settings", {"enable_discount_accounting": 1})
-=======
 	def test_item_tax_template_change_with_grand_total_discount(self):
 		"""
 		Test that when item tax template changes due to discount on Grand Total,
@@ -3031,8 +3028,7 @@ class TestSalesInvoice(FrappeTestCase):
 
 		si.submit()
 
-	@IntegrationTestCase.change_settings("Selling Settings", {"enable_discount_accounting": 1})
->>>>>>> f00aeec9b4 (Merge pull request #51787 from ljain112/fix-taxes-disc)
+	@change_settings("Selling Settings", {"enable_discount_accounting": 1})
 	def test_sales_invoice_with_discount_accounting_enabled(self):
 		discount_account = create_account(
 			account_name="Discount Account",
