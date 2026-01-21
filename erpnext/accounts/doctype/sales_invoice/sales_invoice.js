@@ -117,10 +117,10 @@ erpnext.accounts.SalesInvoiceController = class SalesInvoiceController extends (
 					return item.delivery_note ? true : false;
 				});
 
-				if (!from_delivery_note && !is_delivered_by_supplier) {
-					cur_frm.add_custom_button(
-						__("Delivery"),
-						cur_frm.cscript["Make Delivery Note"],
+				if (!is_delivered_by_supplier) {
+					this.frm.add_custom_button(
+						__("Delivery Note"),
+						this.frm.cscript["Make Delivery Note"],
 						__("Create")
 					);
 				}
