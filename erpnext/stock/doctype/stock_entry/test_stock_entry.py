@@ -2232,6 +2232,28 @@ class TestStockEntry(FrappeTestCase):
 		se.save()
 		se.submit()
 
+	def test_raw_material_missing_validation(self):
+		original_value = frappe.db.get_single_value("Manufacturing Settings", "material_consumption")
+		frappe.db.set_single_value("Manufacturing Settings", "material_consumption", 0)
+
+		stock_entry = make_stock_entry(
+			item_code="_Test Item",
+			qty=1,
+			target="_Test Warehouse - _TC",
+			do_not_save=True,
+		)
+
+		stock_entry.purpose = "Manufacture"
+		stock_entry.stock_entry_type = "Manufacture"
+		stock_entry.items[0].is_finished_item = 1
+
+		self.assertRaises(
+			frappe.ValidationError,
+			stock_entry.save,
+		)
+
+		frappe.db.set_single_value("Manufacturing Settings", "material_consumption", original_value)
+
 
 def make_serialized_item(**args):
 	args = frappe._dict(args)
