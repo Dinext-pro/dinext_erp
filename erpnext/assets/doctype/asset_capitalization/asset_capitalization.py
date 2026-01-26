@@ -613,13 +613,19 @@ class AssetCapitalization(StockController):
 		if self.docstatus == 2:
 			gross_purchase_amount = asset_doc.gross_purchase_amount - total_target_asset_value
 			purchase_amount = asset_doc.purchase_amount - total_target_asset_value
-			asset_doc.db_set("total_asset_cost", asset_doc.total_asset_cost - total_target_asset_value)
+			total_asset_cost = asset_doc.total_asset_cost - total_target_asset_value
 		else:
 			gross_purchase_amount = asset_doc.gross_purchase_amount + total_target_asset_value
 			purchase_amount = asset_doc.purchase_amount + total_target_asset_value
+			total_asset_cost = asset_doc.total_asset_cost + total_target_asset_value
 
-		asset_doc.db_set("gross_purchase_amount", gross_purchase_amount)
-		asset_doc.db_set("purchase_amount", purchase_amount)
+		asset_doc.db_set(
+			{
+				"gross_purchase_amount": gross_purchase_amount,
+				"purchase_amount": purchase_amount,
+				"total_asset_cost": total_asset_cost,
+			}
+		)
 
 		frappe.msgprint(
 			_("Asset {0} has been updated. Please set the depreciation details if any and submit it.").format(
