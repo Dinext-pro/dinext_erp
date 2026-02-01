@@ -246,10 +246,6 @@ class StockEntry(StockController):
 		self.validate_same_source_target_warehouse_during_material_transfer()
 		self.validate_raw_materials_exists()
 
-<<<<<<< HEAD
-=======
-		super().validate_subcontracting_inward()
-
 	def validate_repack_entry(self):
 		if self.purpose != "Repack":
 			return
@@ -264,7 +260,6 @@ class StockEntry(StockController):
 				title=_("Set Basic Rate Manually"),
 			)
 
->>>>>>> 6423ce2fa7 (fix: validation when more than one FG items in repack stock entry)
 	def validate_raw_materials_exists(self):
 		if self.purpose not in ["Manufacture", "Repack", "Disassemble"]:
 			return
