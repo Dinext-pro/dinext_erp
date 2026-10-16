@@ -1,0 +1,8 @@
+{
+  "app": "erpnext",
+  "package_dir": "erpnext",
+  "mode": "platform-smoke",
+  "gitflow": false,
+  "frontend_tests": false,
+  "skip_test_records": false
+}
