@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "upstream": "frappe/erpnext",
+  "selected_tag": "v15.123.0",
+  "selected_commit": "e864addb6c367688d2b264f284c2dd9b9360a97d",
+  "integration_branch": "dinext/main/v15",
+  "prior_dinext_commit": "3a305204e99040c41a7ed84f4ce79faf199ef84f",
+  "prior_vendor_snapshot": "8a91afc515b47beaa654062344b08ab418d6b470",
+  "customizations": "docs/dinext-source-upgrade.md",
+  "automatic_sync": false
+}
