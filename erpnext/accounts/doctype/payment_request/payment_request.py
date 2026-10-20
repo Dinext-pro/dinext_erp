@@ -4,10 +4,10 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from frappe.query_builder.functions import Sum
-from frappe.utils import flt, nowdate
+from frappe.utils import cstr, flt, nowdate
 from frappe.utils.background_jobs import enqueue
 
-from erpnext import get_company_currency
+from erpnext import _refuse, get_company_currency
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
 	get_accounting_dimensions,
 )
@@ -411,6 +411,18 @@ class PaymentRequest(Document):
 
 		return payment_entry
 
+	@frappe.whitelist(methods=["POST"])
+	def resend_payment_email(self):
+		if not (
+			self.docstatus == 1
+			and self.payment_request_type == "Inward"
+			and self.payment_channel != "Phone"
+			and self.status not in ["Initiated", "Paid"]
+		):
+			frappe.throw(_("Payment Link couldn't be sent."))
+
+		self.send_email()
+
 	def send_email(self):
 		"""send email with payment link"""
 		email_args = {
@@ -428,7 +440,17 @@ class PaymentRequest(Document):
 				)
 			],
 		}
-		enqueue(method=frappe.sendmail, queue="short", timeout=300, is_async=True, **email_args)
+		job_id = f"send_payment_email::{self.name}"
+		enqueue(
+			method=frappe.sendmail,
+			queue="short",
+			timeout=300,
+			is_async=True,
+			job_id=job_id,
+			deduplicate=True,
+			enqueue_after_commit=True,
+			**email_args,
+		)
 
 	def get_message(self):
 		"""return message with payment gateway link"""
@@ -439,7 +461,7 @@ class PaymentRequest(Document):
 		}
 
 		if self.message:
-			return frappe.render_template(self.message, context)
+			return frappe.render_template(self.message, context, restrict_globals=True)
 
 	def set_failed(self):
 		pass
@@ -828,11 +850,6 @@ def get_print_format_list(ref_doctype):
 
 
 @frappe.whitelist()
-def resend_payment_email(docname):
-	return frappe.get_doc("Payment Request", docname).send_email()
-
-
-@frappe.whitelist()
 def make_payment_entry(docname):
 	doc = frappe.get_doc("Payment Request", docname)
 	doc.check_permission("read")
@@ -925,6 +942,10 @@ def get_dummy_message(doc):
 
 @frappe.whitelist()
 def get_subscription_details(reference_doctype, reference_name):
+	reference_name = cstr(reference_name)
+	if not reference_name or not frappe.has_permission(reference_doctype, "read", doc=reference_name):
+		_refuse()
+
 	if reference_doctype == "Sales Invoice":
 		subscriptions = frappe.db.sql(
 			"""SELECT parent as sub_name FROM `tabSubscription Invoice` WHERE invoice=%s""",
