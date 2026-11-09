@@ -46,7 +46,7 @@ jobs:
     env:
       PAIR_APP: erpnext
       OTHER_REPO: Dinext-pro/dinext_platform
-      OTHER_REF: dinext/upgrade/v15.123.0
+      OTHER_REF: de9b663eb808e8ffbe7d38a0a3233a45745831a6
       CI: 'true'
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
